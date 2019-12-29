@@ -17,6 +17,10 @@ export default {
   },
   data () {
     return {
+      params: {
+        pageNum: 1,
+        pageSize: 10
+      },
       columns: [
         { title: 'Name', key: 'name', sortable: true },
         { title: 'Email', key: 'email', editable: true },
@@ -59,7 +63,7 @@ export default {
     }
   },
   mounted () {
-    getTableData().then(res => {
+    getTableData(this.params).then(res => {
       this.tableData = res.data
     })
   }

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 // import { Spin } from 'iview'
+import { setToken } from '@/libs/util'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
   let info = {
@@ -46,9 +47,14 @@ class HttpRequest {
     })
     // 响应拦截
     instance.interceptors.response.use(res => {
-      this.destroy(url)
-      const { data, status } = res
-      return { data, status }
+      if (res.data.code === '101') {
+        setToken('')
+        location.href = '/login'
+      } else {
+        this.destroy(url)
+        const { data, status } = res
+        return { data, status }
+      }
     }, error => {
       this.destroy(url)
       let errorInfo = error.response

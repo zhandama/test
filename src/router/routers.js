@@ -1,5 +1,5 @@
 import Main from '@/components/main'
-import parentView from '@/components/parent-view'
+// import parentView from '@/components/parent-view'
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -50,30 +50,9 @@ export default [
       }
     ]
   },
-
-  {
-    path: '/message',
-    name: 'message',
-    component: Main,
-    meta: {
-      hideInBread: true,
-      hideInMenu: true
-    },
-    children: [
-      {
-        path: 'message_page',
-        name: 'message_page',
-        meta: {
-          icon: 'md-notifications',
-          title: '消息中心'
-        },
-        component: () => import('@/view/single-page/message/index.vue')
-      }
-    ]
-  },
   {
     path: '/goods',
-    name: '商品管理',
+    name: 'goods',
     component: Main,
     meta: {
       icon: '_qq',
@@ -81,16 +60,16 @@ export default [
     },
     children: [
       {
-        path: 'goods',
-        name: '商品列表',
+        path: 'goodslist',
+        name: 'goodslist',
         meta: {
           icon: '_qq',
           title: '商品管理'
         },
         component: () => import('@/view/goods/user-list.vue')
       }, {
-        path: 'goods',
-        name: '商品类型',
+        path: 'goodstype',
+        name: 'goodstype',
         meta: {
           icon: '_qq',
           title: '商品类型'
@@ -101,15 +80,15 @@ export default [
   },
   {
     path: '/order',
-    name: '订单管理',
+    name: 'order',
     component: Main,
     meta: {
       hideInBread: true
     },
     children: [
       {
-        path: 'order',
-        name: '订单管理',
+        path: 'orderlist',
+        name: 'orderlist',
         meta: {
           icon: '_qq',
           title: '订单管理'
@@ -120,15 +99,15 @@ export default [
   },
   {
     path: '/user',
-    name: '用户管理',
+    name: 'user',
     component: Main,
     meta: {
       hideInBread: true
     },
     children: [
       {
-        path: 'user',
-        name: '前台用户管理',
+        path: 'userlist',
+        name: 'userlist',
         meta: {
           icon: '_qq',
           title: '用户列表'
@@ -139,7 +118,7 @@ export default [
   },
   {
     path: '/backendset',
-    name: '后台管理',
+    name: 'backendset',
     component: Main,
     meta: {
       icon: 'logo-buffer',
@@ -148,15 +127,15 @@ export default [
     children: [
       {
         path: 'list',
-        name: '后台用户管理',
+        name: 'backendlist',
         meta: {
           icon: '_qq',
           title: '后台用户列表'
         },
         component: () => import('@/view/user/user-list.vue')
       }, {
-        path: 'power',
-        name: '权限管理',
+        path: 'backendpower',
+        name: 'backendpower',
         meta: {
           icon: '_qq',
           title: '权限管理'
@@ -169,16 +148,17 @@ export default [
     path: '/error_logger',
     name: 'error_logger',
     meta: {
-      hideInBread: true
+      hideInBread: true,
+      hideInMenu: true
     },
     component: Main,
     children: [
       {
         path: 'error_logger_page',
-        name: '日志',
+        name: 'error_logger_page',
         meta: {
           icon: 'ios-bug',
-          title: '日志'
+          title: '错误收集'
         },
         component: () => import('@/view/single-page/error-logger.vue')
       }
