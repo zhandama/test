@@ -55,7 +55,7 @@ export default [
     name: 'goods',
     component: Main,
     meta: {
-      icon: '_qq',
+      icon: 'md-list',
       title: '商品管理'
     },
     children: [
@@ -63,18 +63,38 @@ export default [
         path: 'goodslist',
         name: 'goodslist',
         meta: {
-          icon: '_qq',
-          title: '商品管理'
+          icon: 'md-list',
+          title: '商品列表'
         },
-        component: () => import('@/view/goods/user-list.vue')
+        component: () => import('@/view/goods/goods-list.vue')
       }, {
-        path: 'goodstype',
-        name: 'goodstype',
+        path: 'goodsadd',
+        name: 'goodsadd',
         meta: {
-          icon: '_qq',
-          title: '商品类型'
+          icon: 'md-add',
+          title: '添加商品'
         },
-        component: () => import('@/view/goods/user-list.vue')
+        component: () => import('@/view/goods/goods-add.vue')
+      }
+    ]
+  },
+  {
+    path: '/property',
+    name: 'property',
+    component: Main,
+    meta: {
+      icon: 'md-list',
+      title: '商品属性'
+    },
+    children: [
+      {
+        path: 'propertylist',
+        name: 'propertylist',
+        meta: {
+          icon: 'md-list',
+          title: '属性列表'
+        },
+        component: () => import('@/view/property/property-list.vue')
       }
     ]
   },
@@ -90,10 +110,29 @@ export default [
         path: 'orderlist',
         name: 'orderlist',
         meta: {
-          icon: '_qq',
+          icon: 'md-menu',
           title: '订单管理'
         },
         component: () => import('@/view/order/user-list.vue')
+      }
+    ]
+  },
+  {
+    path: '/frontuser',
+    name: 'frontuser',
+    component: Main,
+    meta: {
+      hideInBread: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'frontuserlist',
+        meta: {
+          icon: 'md-list',
+          title: '前台用户列表'
+        },
+        component: () => import('@/view/user/user-list.vue')
       }
     ]
   },
@@ -102,26 +141,7 @@ export default [
     name: 'user',
     component: Main,
     meta: {
-      hideInBread: true
-    },
-    children: [
-      {
-        path: 'userlist',
-        name: 'userlist',
-        meta: {
-          icon: '_qq',
-          title: '用户列表'
-        },
-        component: () => import('@/view/user/user-list.vue')
-      }
-    ]
-  },
-  {
-    path: '/backendset',
-    name: 'backendset',
-    component: Main,
-    meta: {
-      icon: 'logo-buffer',
+      icon: 'md-list',
       title: '后台管理'
     },
     children: [
@@ -129,16 +149,8 @@ export default [
         path: 'list',
         name: 'backendlist',
         meta: {
-          icon: '_qq',
+          icon: 'ios-people',
           title: '后台用户列表'
-        },
-        component: () => import('@/view/user/user-list.vue')
-      }, {
-        path: 'backendpower',
-        name: 'backendpower',
-        meta: {
-          icon: '_qq',
-          title: '权限管理'
         },
         component: () => import('@/view/user/user-list.vue')
       }

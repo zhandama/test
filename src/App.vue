@@ -24,4 +24,7 @@ html,body{
 #app {
   .size;
 }
+.textinput {
+  margin-bottom: 10px;
+}
 </style>

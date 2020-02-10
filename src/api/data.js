@@ -1,13 +1,5 @@
 import axios from '@/libs/api.request'
 
-export const getTableData = (params) => {
-  return axios.request({
-    url: 'userInfo/selectByPage',
-    params,
-    method: 'get'
-  })
-}
-
 export const getDragList = () => {
   return axios.request({
     url: 'get_drag_list',

@@ -4,13 +4,14 @@ import store from '@/store'
 import { setToken } from '@/libs/util'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
-  let info = {
-    type: 'ajax',
-    code: status,
-    mes: statusText,
-    url: responseURL
-  }
-  if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
+  // let info = {
+  //   type: 'ajax',
+  //   code: status,
+  //   mes: statusText,
+  //   url: responseURL
+  // }
+  // // 发送错误日志
+  // if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
 }
 
 class HttpRequest {
@@ -47,7 +48,7 @@ class HttpRequest {
     })
     // 响应拦截
     instance.interceptors.response.use(res => {
-      if (res.data.code === '101') {
+      if (res.data.code == 101) {
         setToken('')
         location.href = '/login'
       } else {

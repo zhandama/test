@@ -6,6 +6,8 @@ const { title, cookieExpires, useI18n } = config
 
 export const TOKEN_KEY = 'xq-backend-authkey'
 
+export const baseUrl = 'http://27n5n57140.wicp.vip/backend/'
+
 export const setToken = (token) => {
   Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })
 }
