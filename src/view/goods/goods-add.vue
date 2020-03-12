@@ -21,13 +21,14 @@
           <div class="ivu-input-group-prepend" style=""><span>商品类别<span class="xing">*</span>：</span></div>
           <div class="ivu-input-inner-container">
             <i class="ivu-icon ivu-icon-ios-loading ivu-load-loop ivu-input-icon ivu-input-icon-validate"></i>
-            <Cascader :data="this.property.data" v-model="category"></Cascader>
+            <Cascader :data="this.property.data" v-model="category" @on-change="handleChange"></Cascader>
           </div>
         </div>
       </div>
       <div class="textinput">
         <i-input v-model="params.phone" placeholder="请输入..." style="width: 300px">
           <span slot="prepend">动态属性：</span>
+          <!-- <span></span> -->
         </i-input>
       </div>
       <div class="textinput">

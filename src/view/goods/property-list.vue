@@ -222,8 +222,7 @@ export default {
     cancel () {
       this.initParams()
     },
-    userEdit (item) { // 修改用户
-      console.log(item)
+    userEdit (item) { // 修改
       this.modify = true
       this.showAdd()
       this.params.defalutValue = item.defalutValue

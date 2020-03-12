@@ -50,3 +50,11 @@ export const modifyUserForSystem = data => {
     method: 'post'
   })
 }
+// 获取积分列表
+export const scoreList = (params) => {
+  return axios.request({
+    url: 'scoreInfo/selectByPage',
+    params,
+    method: 'get'
+  })
+}

@@ -293,7 +293,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.xing{color:red;padding:0 2px}
-</style>

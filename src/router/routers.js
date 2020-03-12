@@ -46,7 +46,7 @@ export default [
           notCache: true,
           icon: 'md-home'
         },
-        component: () => import('@/view/single-page/home')
+        component: () => import('@/view/goods/goods-list.vue')
       }
     ]
   },
@@ -68,33 +68,21 @@ export default [
         },
         component: () => import('@/view/goods/goods-list.vue')
       }, {
-        path: 'goodsadd',
-        name: 'goodsadd',
+        path: 'category',
+        name: 'category',
         meta: {
-          icon: 'md-add',
-          title: '添加商品'
+          icon: 'md-menu',
+          title: '家具类型'
         },
-        component: () => import('@/view/goods/goods-add.vue')
-      }
-    ]
-  },
-  {
-    path: '/property',
-    name: 'property',
-    component: Main,
-    meta: {
-      icon: 'md-list',
-      title: '商品属性'
-    },
-    children: [
-      {
-        path: 'propertylist',
-        name: 'propertylist',
+        component: () => import('@/view/goods/category-list.vue')
+      }, {
+        path: 'property',
+        name: 'property',
         meta: {
-          icon: 'md-list',
-          title: '属性列表'
+          icon: 'md-menu',
+          title: '商品属性'
         },
-        component: () => import('@/view/property/property-list.vue')
+        component: () => import('@/view/goods/property-list.vue')
       }
     ]
   },
@@ -114,6 +102,26 @@ export default [
           title: '订单管理'
         },
         component: () => import('@/view/order/user-list.vue')
+      }
+    ]
+  },
+  {
+    path: '/score',
+    name: 'score',
+    component: Main,
+    meta: {
+      icon: 'md-list',
+      title: '积分管理'
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'scorelist',
+        meta: {
+          icon: 'ios-people',
+          title: '积分列表'
+        },
+        component: () => import('@/view/user/score-list.vue')
       }
     ]
   },
@@ -147,7 +155,7 @@ export default [
     children: [
       {
         path: 'list',
-        name: 'backendlist',
+        name: 'userlist',
         meta: {
           icon: 'ios-people',
           title: '后台用户列表'

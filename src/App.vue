@@ -27,4 +27,6 @@ html,body{
 .textinput {
   margin-bottom: 10px;
 }
+.xing{color:red;padding:0 2px}
 </style>
+ 

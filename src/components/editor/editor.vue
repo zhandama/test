@@ -50,7 +50,7 @@ export default {
   data () {
     return {
       // 我自己的上传地址
-      upload: '/backend/api/goodsInfo/batchGoodsImage'
+      upload: '/backend-new/api/goodsInfo/batchGoodsImage'
     }
   },
   methods: {
