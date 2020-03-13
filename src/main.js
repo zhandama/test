@@ -39,6 +39,8 @@ Vue.prototype.$config = config
 /**
  * 注册指令
  */
+Vue.prototype.$uploadUrl = '/backend-new/api/goodsInfo/batchGoodsImage'
+Vue.prototype.$showUrl = 'http://27n5n57140.wicp.vip/backend-new/'
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
 

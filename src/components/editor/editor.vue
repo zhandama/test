@@ -8,7 +8,6 @@
 import Editor from 'wangeditor'
 import 'wangeditor/release/wangEditor.min.css'
 import { oneOf } from '@/libs/tools'
-import { baseUrl } from '@/libs/util'
 import { Message } from 'iview'
 export default {
   name: 'Editor',
@@ -50,7 +49,7 @@ export default {
   data () {
     return {
       // 我自己的上传地址
-      upload: '/backend-new/api/goodsInfo/batchGoodsImage'
+      upload: this.$uploadUrl
     }
   },
   methods: {
@@ -59,6 +58,7 @@ export default {
     }
   },
   mounted () {
+    var _url = this.$showUrl
     this.editor = new Editor(`#${this.editorId}`)
     this.editor.customConfig.onchange = (html) => {
       let text = this.editor.txt.text()
@@ -89,7 +89,7 @@ export default {
         Message.error('插入图片失败！')
       },
       customInsert: function (insertImg, result, editor) {
-        var url = baseUrl + result.result
+        var url = _url + result.result
         console.log(result)
         insertImg(url)
       }

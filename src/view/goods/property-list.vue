@@ -57,7 +57,7 @@ export default {
         { title: 'Id', key: 'id', sortable: true },
         { title: '属性名', key: 'name' },
         { title: '默认值', key: 'defalutValue' },
-        { title: '类型', key: 'propertyType' },
+        { title: '类型', key: 'propertyTypeName' },
         { title: '时间', key: 'createTime' },
         {
           title: '操作',
@@ -149,6 +149,17 @@ export default {
     getList () {
       propertyInfoList(this.listparams).then(res => {
         this.list = res.data.result
+        this.list.list.map(x => {
+          if (x.propertyType == 1) {
+            x.propertyTypeName = '文本框'
+          } else if (x.propertyType == 2) {
+            x.propertyTypeName = '下拉框'
+          } else if (x.propertyType == 3) {
+            x.propertyTypeName = '单选框'
+          } else if (x.propertyType == 4) {
+            x.propertyTypeName = '多选框'
+          }
+        })
       })
     },
     verifyParams () {
