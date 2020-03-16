@@ -51,15 +51,16 @@ export default {
   data () {
     return {
       params: {
-        description: 'string',
-        goodsAttr: 'string',
-        goodsImg: 'string',
+        description: '',
+        goodsAttr: '',
+        goodsImg: '',
         goodsPropertyList: [],
         initPrice: 0,
         rootCategoryId: 0,
         subCategoryId: 0,
-        title: 'string',
-        vipPrice: 0
+        title: '',
+        vipPrice: 0,
+        hot:false
       },
       category: [],
       property: [],

@@ -2,9 +2,9 @@
 <div>
   <div class="demo-upload-list" v-for="item in uploadList">
     <template v-if="item.status === 'finished'">
-      <img :src="item.showUrl">
+      <img :src="item.url">
       <div class="demo-upload-list-cover">
-        <Icon type="ios-eye-outline" @click.native="handleView(item.showUrl)" size="30"></Icon>
+        <Icon type="ios-eye-outline" @click.native="handleView(item.url)" size="30"></Icon>
         <Icon type="ios-trash-outline" @click.native="handleRemove(item)" size="30"></Icon>
       </div>
     </template>
@@ -12,10 +12,23 @@
       <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
     </template>
   </div>
-  <Upload ref="upload" name="editormd-image-file" :show-upload-list="false" :default-file-list="defaultList" :on-success="handleSuccess" :format="['jpg','jpeg','png']" :max-size="2048" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" multiple type="drag" :action="$uploadUrl" style="display: inline-block;width:80px;" accept="image/*">
-    <div style="width: 80px;height:80px;line-height: 80px;">
-      <Icon type="ios-camera" size="50"></Icon>
-    </div>
+   <Upload
+      ref="upload"
+      :show-upload-list="false"
+      :default-file-list="defaultList"
+      :on-success="handleSuccess"
+      :format="['jpg','jpeg','png']"
+      :max-size="2048"
+      :on-format-error="handleFormatError"
+      :on-exceeded-size="handleMaxSize"
+      :before-upload="handleBeforeUpload"
+      multiple
+      type="drag"
+      :action="$uploadUrl"
+      style="display: inline-block;width:80px;">
+      <div style="width: 80px;height:80px;line-height: 80px;">
+          <Icon type="ios-camera" size="50"></Icon>
+      </div>
   </Upload>
   <Modal title="查看大图" v-model="visible">
     <img :src="imgName" v-if="visible" style="width: 100%">
@@ -34,16 +47,21 @@ export default {
       default:15
     }
   },
+  watch:{
+    defaultList(val){
+      console.log(val)
+    }
+  },
   data() {
     return {
       // defaultList: [
       //   {
       //     'name': 'a42bdcc1178e62b4694c830f028db5c0',
-      //     'url': 'https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar'
+      //     'url': 'http://27n5n57140.wicp.vip/backend-new/imgupload/goods/1584354993064.jpg'
       //   },
       //   {
       //     'name': 'bc7521e033abdd1e92222d733590f104',
-      //     'url': 'https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar'
+      //     'url': 'http://27n5n57140.wicp.vip/backend-new/imgupload/goods/1584354993064.jpg'
       //   }
       // ],
       imgName: '',
@@ -52,8 +70,8 @@ export default {
     }
   },
   methods: {
-    handleView(name) {
-      this.imgName = name;
+    handleView(url) {
+      this.imgName = url;
       this.visible = true;
     },
     handleRemove(file) {
@@ -62,7 +80,7 @@ export default {
     },
     handleSuccess(res, file) {
       if (res.success) {
-        file.showUrl = this.$showUrl + res.result
+        file.name = this.$showUrl + res.result
         file.url = res.result
       }
     },

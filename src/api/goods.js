@@ -23,6 +23,14 @@ export const goodsAdd = data => {
     method: 'post'
   })
 }
+// 商品修改
+export const goodsModify = data => {
+  return axios.request({
+    url: 'goodsInfo/modify',
+    data,
+    method: 'post'
+  })
+}
 // 商品删除
 export const goodsDelete = data => {
   return axios.request({

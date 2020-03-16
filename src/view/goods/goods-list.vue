@@ -5,11 +5,13 @@
       <tables ref="tables" editable searchable search-place="top" v-model="tableData.list" :columns="columns" @on-row-dblclick="handleRowClick" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="params.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
-    <Modal v-model="modal1" title="添加/修改" @on-ok="ok" @on-cancel="addcancel" :loading="loading" width="700">
+    <Modal v-model="modal1" title="添加/修改" @on-ok="ok" @on-cancel="addcancel" :loading="loading" width="700" :styles="{'margin-bottom': '30px'}">
       <div class="textinput">
-        <i-input v-model="addparams.title" placeholder="请输入..." style="width: 430px">
+        <i-input v-model="addparams.title" placeholder="请输入..." style="width: 430px;float:left;">
           <span slot="prepend">商品名称<span class="xing">*</span>：</span>
         </i-input>
+        <Checkbox v-model="addparams.hot" style="float:left;padding-top:7px;padding-left:10px">热销</Checkbox>
+        <div style="clear:both"></div>
       </div>
       <div class="textinput">
         <i-input v-model="addparams.initPrice" placeholder="请输入..." style="width: 200px;float:left">
@@ -44,11 +46,11 @@
       </div>
       <div class="textinput">
         <span slot="prepend">商品列表图片1张：</span>
-        <uploadImg ref="goodsAttr" :maxlength="1" :defaultList="url"/>
+        <uploadImg ref="goodsAttr" :maxlength="1" :defaultList="goodsAttr" v-if="modal1"/>
       </div>
       <div class="textinput">
         <span slot="prepend">商品轮播图：</span>
-        <uploadImg ref="goodsImg" :defaultList="url"/>
+        <uploadImg ref="goodsImg" :defaultList="goodsImg" v-if="modal1"/>
       </div>
       <div class="textinput">
         <span slot="prepend">商品描述：</span>
@@ -60,7 +62,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { goodsAdd, goodsDelete, getGoodsList, goodsOnline, propertyInfoList, categoryList } from '@/api/goods'
+import { goodsAdd, goodsModify, goodsDelete, getGoodsList, goodsOnline, propertyInfoList, categoryList } from '@/api/goods'
 import Editor from '_c/editor'
 import Icons from '_c/icons'
 import uploadImg from './upload.vue'
@@ -80,6 +82,7 @@ export default {
       },
       addparams: {
         title: '',
+        hot: false,
         initPrice: 0,
         vipPrice: 0,
         goodsAttr: '',
@@ -94,26 +97,27 @@ export default {
       modify: false,
       property: [],
       category: [],
-      url:[],
+      goodsAttr: [],
+      goodsImg: [],
       columns: [
         { title: '商品ID', key: 'goodsId', sortable: true },
         { title: '商品标题', key: 'title' },
         { title: '价格', key: 'initPrice' },
-        { title: '缩略图', key: 'goodsAttr', render:(h,params) => {
-        return h('img', {
-            attrs: {
-                src: params.row.goodsAttr ? this.$showUrl + params.row.goodsAttr :''
+        {          title: '缩略图', key: 'goodsAttr', render: (h, params) => {
+            return h('img', {
+              attrs: {
+                src: params.row.goodsAttr ? this.$showUrl + params.row.goodsAttr : ''
               },
               //使用style直接定义图片的样式
               style: {
-                  width: '50px',
-                  height: '50px',
-                  borderRadius: '5px',
-                  verticalAlign: 'middle',
-                  margin: '5px'
+                width: '50px',
+                height: '50px',
+                borderRadius: '5px',
+                verticalAlign: 'middle',
+                margin: '5px'
               }
-          })
-        }},
+            })
+          }        },
         { title: '状态', key: 'stateName' },
         { title: '时间', key: 'createTime' },
         {
@@ -133,7 +137,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      // this.userEdit(params.row)
+                      this.goodsEdit(params.row)
                       console.log('修改')
                     }
                   }
@@ -285,7 +289,7 @@ export default {
           }
         })
         return false
-      } else if (this.addparams.initPrice<=0) {
+      } else if (this.addparams.initPrice <= 0) {
         this.$Modal.error({
           title: '提示',
           content: '请输入价格',
@@ -294,7 +298,7 @@ export default {
           }
         })
         return false
-      } else if (this.addparams.vipPrice<=0) {
+      } else if (this.addparams.vipPrice <= 0) {
         this.$Modal.error({
           title: '提示',
           content: '请输入会员价格',
@@ -363,15 +367,15 @@ export default {
         this.modal1 = false
         return
       }
-      if (this.$refs.goodsAttr.uploadList.length>0) {
-        this.addparams.goodsAttr = this.$refs.goodsAttr.uploadList.map(x=>x.url).join(';')
+      if (this.$refs.goodsAttr.uploadList.length > 0) {
+        this.addparams.goodsAttr = this.$refs.goodsAttr.uploadList.map(x => x.url).join(';')
       }
-      if (this.$refs.goodsImg.uploadList.length>0) {
-        this.addparams.goodsImg = this.$refs.goodsImg.uploadList.map(x=>x.url).join(';')
+      if (this.$refs.goodsImg.uploadList.length > 0) {
+        this.addparams.goodsImg = this.$refs.goodsImg.uploadList.map(x => x.url).join(';')
       }
-      this.addparams.rootCategoryId= this.category.value[0]
+      this.addparams.rootCategoryId = this.category.value[0]
       if (this.modify) {
-        modifyUserForSystem(this.params).then(res => {
+        goodsModify(this.addparams).then(res => {
           if (res.data && res.data.success) {
             this.$Message.success('操作成功')
             this.initParams()
@@ -408,19 +412,39 @@ export default {
         })
       }
     },
-    initParams(){
-      this.addparams = {
-        title: '',
-        initPrice: 0,
-        vipPrice: 0,
-        goodsAttr: '',
-        goodsImg: '',
-        goodsPropertyList: [],
-        description: '',
-      }
+    initParams() {
+      this.addparams.title= ''
+      this.addparams.hot= false
+      this.addparams.initPrice= 0
+      this.addparams.vipPrice= 0
+      this.addparams.goodsAttr= ''
+      this.addparams.goodsImg= ''
+      this.addparams.goodsPropertyList= []
+      this.addparams.description= ''
+      this.modify = false
+    },
+    goodsEdit(row) {
+      this.modify = true
+      this.addparams.id= row.id
+      this.addparams.title= row.title
+      this.addparams.hot= row.hot
+      this.addparams.initPrice= row.initPrice
+      this.addparams.vipPrice= row.vipPrice
+      // this.addparams.goodsAttr= row.goodsAttr
+      // this.addparams.goodsImg= row.goodsImg
+      this.addparams.goodsPropertyList= row.goodsPropertyList
+      this.addparams.description= row.description
+      this.goodsAttr.push({url:this.$showUrl+row.goodsAttr,name:row.goodsAttr})
+
+      // this.goodsImg = row.goodsImg.split(';').map(x=>{
+      //   var a = {url:this.$showUrl+x,name:x}
+      //   return a
+      // })
+      console.log(this.goodsAttr,this.goodsImg)
+      this.showAdd()
     },
     addcancel() {
-      // debugger
+      this.initParams()
     },
     cancel() {
       this.initParams()
@@ -439,8 +463,23 @@ export default {
 .ivu-input-group .ivu-input-inner-container {
   z-index: auto;
 }
-.inpCheck{height:30px;border:1px solid #ddd;border-radius:0 3px 3px 0;padding-left:10px;line-height:28px}
-.inpCheck-title{float:left;padding-right:10px;}
-.inpCheck-title input{position: relative;top:3px;}
-.inpCheck-tips{padding-left:3px;float:right}
+.inpCheck {
+  height: 30px;
+  border: 1px solid #ddd;
+  border-radius: 0 3px 3px 0;
+  padding-left: 10px;
+  line-height: 28px;
+}
+.inpCheck-title {
+  float: left;
+  padding-right: 10px;
+}
+.inpCheck-title input {
+  position: relative;
+  top: 3px;
+}
+.inpCheck-tips {
+  padding-left: 3px;
+  float: right;
+}
 </style>
