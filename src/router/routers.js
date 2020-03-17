@@ -101,7 +101,7 @@ export default [
           icon: 'md-menu',
           title: '订单管理'
         },
-        component: () => import('@/view/order/user-list.vue')
+        component: () => import('@/view/order/order-list.vue')
       }
     ]
   },

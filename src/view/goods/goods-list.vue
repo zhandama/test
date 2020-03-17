@@ -27,30 +27,35 @@
           <div class="ivu-input-group-prepend"><span>商品类别<span class="xing">*</span>：</span></div>
           <div class="ivu-input-inner-container">
             <i class="ivu-icon ivu-icon-ios-loading ivu-load-loop ivu-input-icon ivu-input-icon-validate"></i>
-            <Cascader :data="category.data" @on-change="categoryChange"></Cascader>
+            <Cascader :data="category.data" @on-change="categoryChange" :value="category.value"></Cascader>
           </div>
         </div>
       </div>
-      <div class="textinput" v-for="item in property" :key="item.id">
-        <i-input v-model="item.value" placeholder="请输入..." style="width: 350px;float:left">
-          <span slot="prepend">{{item.name}}：</span>
-        </i-input>
-        <!-- <div v-if="item.propertyType!=1" class="ivu-input-wrapper ivu-input-wrapper-default ivu-input-type ivu-input-group ivu-input-group-default ivu-input-group-with-prepend" >
-          <div class="ivu-input-group-prepend"><span>{{item.name}}：</span></div>
-          <div class="inpCheck">
-            <Checkbox v-for="(itemName,itemindex) in item.data" :checked.sync="itemName.checked" @on-change="propertyChange(itemName,item)" :key="itemindex">{{itemName.name}}</Checkbox>
-          </div>
-        </div> -->
-        <div v-if="item.propertyType!=1" style="line-height:30px;float:left;padding-left:7px;color:#aaa">多属性用于下单用户选择(英文分号隔开)</div>
-        <div style="clear:both"></div>
+      <!--goodsPropertyList start-->
+      <div v-if="addparams.goodsPropertyList&&addparams.goodsPropertyList.length>0">
+        <div class="textinput" v-for="item in addparams.goodsPropertyList" :key="item.id">
+          <i-input v-model="item.value" placeholder="请输入..." style="width: 350px;float:left">
+            <span slot="prepend">{{item.name}}：</span>
+          </i-input>
+          <!-- <div v-if="item.propertyType!=1" class="ivu-input-wrapper ivu-input-wrapper-default ivu-input-type ivu-input-group ivu-input-group-default ivu-input-group-with-prepend" >
+            <div class="ivu-input-group-prepend"><span>{{item.name}}：</span></div>
+            <div class="inpCheck">
+              <Checkbox v-for="(itemName,itemindex) in item.data" :checked.sync="itemName.checked" @on-change="propertyChange(itemName,item)" :key="itemindex">{{itemName.name}}</Checkbox>
+            </div>
+          </div> -->
+          <Checkbox v-if="item.propertyType!=1" v-model="item.userSelect" style="float:left;padding-top:7px;padding-left:10px">是否需要买家选择</Checkbox>
+          <div v-if="item.propertyType!=1" style="line-height:30px;float:left;padding-left:7px;color:#aaa">(多属性英文分号隔开)</div>
+          <div style="clear:both"></div>
+        </div>
       </div>
+      <!--goodsPropertyList end-->
       <div class="textinput">
         <span slot="prepend">商品列表图片1张：</span>
-        <uploadImg ref="goodsAttr" :maxlength="1" :defaultList="goodsAttr" v-if="modal1"/>
+        <uploadImg ref="goodsAttr" :maxlength="1" :defaultList="goodsAttr" v-if="modal1" />
       </div>
       <div class="textinput">
         <span slot="prepend">商品轮播图：</span>
-        <uploadImg ref="goodsImg" :defaultList="goodsImg" v-if="modal1"/>
+        <uploadImg ref="goodsImg" :defaultList="goodsImg" v-if="modal1" />
       </div>
       <div class="textinput">
         <span slot="prepend">商品描述：</span>
@@ -62,7 +67,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { goodsAdd, goodsModify, goodsDelete, getGoodsList, goodsOnline, propertyInfoList, categoryList } from '@/api/goods'
+import { goodsAdd, goodsModify, selectByGoodsId, goodsDelete, getGoodsList, goodsOnline, propertyInfoList, categoryList } from '@/api/goods'
 import Editor from '_c/editor'
 import Icons from '_c/icons'
 import uploadImg from './upload.vue'
@@ -189,6 +194,7 @@ export default {
   },
   methods: {
     categoryChange(value) {
+      console.log(value)
       this.category.value = value
       console.log(value)
     },
@@ -210,6 +216,8 @@ export default {
     //   }
     // },
     showAdd() {
+      this.addparams.goodsPropertyList = []
+      this.initgoodsPropertyList()
       this.modal1 = true
       this.$refs.editor.setHtml(this.addparams.description)
     },
@@ -268,17 +276,6 @@ export default {
       // console.log(html,'2222222', text)
     },
     verifyParams() {
-      // addparams: {
-      //   description: 'string',
-      //   goodsAttr: 'string',
-      //   goodsImg: 'string',
-      //   goodsPropertyList: [],
-      //   initPrice: 0,
-      //   rootCategoryId: 0,
-      //   subCategoryId: 0,
-      //   title: 'string',
-      //   vipPrice: 0
-      // }
       console.log(this.addparams)
       if (this.addparams.title.length < 1) {
         this.$Modal.error({
@@ -340,38 +337,36 @@ export default {
         if (res.data && res.data.success) {
           this.property = res.data.result.list
           if (this.property && this.property.length > 0) {
-            this.property.map(x => {
-              x.value = x.defalutValue
-              // if (x.propertyType==1 && x.defalutValue){
-              //   x.value = x.defalutValue
-              // } else {
-              //   if (x.defalutValue.indexOf(';')!=-1) {
-              //     x.data = x.defalutValue.split(';').map(x=>{
-              //       var obj = {
-              //         checked:false,
-              //         name: x
-              //       }
-              //       return obj
-              //     })
-
-              //   }
-              // }
-            })
+            this.initgoodsPropertyList()
           }
         }
       })
     },
+    verifyProperty() {
+      // this.addparams.goodsPropertyList = []
+      // this.property.map(x=>{
+      //   var obj = {
+      //   fieldName: x.fieldName,
+      //   propertyValue: x.value,
+      //   userSelect: x.userSelect
+      // }
+      //   this.addparams.goodsPropertyList.push(obj)
+      // })
+    },
     ok() {
       var vm = this
-      if (!this.verifyParams()) {
-        this.modal1 = false
-        return
-      }
       if (this.$refs.goodsAttr.uploadList.length > 0) {
+        this.goodsAttr = this.$refs.goodsAttr.uploadList
         this.addparams.goodsAttr = this.$refs.goodsAttr.uploadList.map(x => x.url).join(';')
       }
       if (this.$refs.goodsImg.uploadList.length > 0) {
+        this.goodsImg = this.$refs.goodsImg.uploadList
         this.addparams.goodsImg = this.$refs.goodsImg.uploadList.map(x => x.url).join(';')
+      }
+      this.verifyProperty()
+      if (!this.verifyParams()) {
+        this.modal1 = false
+        return
       }
       this.addparams.rootCategoryId = this.category.value[0]
       if (this.modify) {
@@ -412,37 +407,47 @@ export default {
         })
       }
     },
+    initgoodsPropertyList() {
+      this.addparams.goodsPropertyList = this.copy(this.property)
+      this.addparams.goodsPropertyList.map(x => {
+        x.value = x.defalutValue
+      })
+    },
+    copy(obj) {
+      return JSON.parse(JSON.stringify(obj))
+    },
     initParams() {
-      this.addparams.title= ''
-      this.addparams.hot= false
-      this.addparams.initPrice= 0
-      this.addparams.vipPrice= 0
-      this.addparams.goodsAttr= ''
-      this.addparams.goodsImg= ''
-      this.addparams.goodsPropertyList= []
-      this.addparams.description= ''
+      this.addparams.title = ''
+      this.addparams.hot = false
+      this.addparams.initPrice = 0
+      this.addparams.vipPrice = 0
+      this.addparams.goodsAttr = ''
+      this.addparams.goodsImg = ''
+      this.addparams.description = ''
+      this.goodsAttr = []
+      this.goodsImg = []
+      this.category.value = []
       this.modify = false
     },
     goodsEdit(row) {
       this.modify = true
-      this.addparams.id= row.id
-      this.addparams.title= row.title
-      this.addparams.hot= row.hot
-      this.addparams.initPrice= row.initPrice
-      this.addparams.vipPrice= row.vipPrice
-      // this.addparams.goodsAttr= row.goodsAttr
-      // this.addparams.goodsImg= row.goodsImg
-      this.addparams.goodsPropertyList= row.goodsPropertyList
-      this.addparams.description= row.description
-      this.goodsAttr.push({url:this.$showUrl+row.goodsAttr,name:row.goodsAttr})
-
-      // this.goodsImg = row.goodsImg.split(';').map(x=>{
-      //   var a = {url:this.$showUrl+x,name:x}
-      //   return a
-      // })
-      console.log(this.goodsAttr,this.goodsImg)
+      this.addparams.id = row.id
+      this.addparams.title = row.title
+      this.addparams.hot = row.hot
+      this.addparams.initPrice = row.initPrice
+      this.addparams.vipPrice = row.vipPrice
+      this.addparams.description = row.description
+      this.goodsAttr = row.goodsAttr ? [{ url: row.goodsAttr, name: row.goodsAttr }] : []
+      this.goodsImg = row.goodsImg ? row.goodsImg.split(';').map(x => { var a = { url: x, name: x }; return a }) : []
+      this.category.value = [row.rootCategoryId]
+      // this.getSelectByGoodsId(row.goodsId)
       this.showAdd()
     },
+    // getSelectByGoodsId(goodsId) {
+    //   selectByGoodsId({ goodsId }).then(res => {
+    //     console.log(res)
+    //   })
+    // },
     addcancel() {
       this.initParams()
     },

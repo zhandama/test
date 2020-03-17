@@ -2,9 +2,9 @@
 <div>
   <div class="demo-upload-list" v-for="item in uploadList">
     <template v-if="item.status === 'finished'">
-      <img :src="item.url">
+      <img :src="$showUrl+item.url">
       <div class="demo-upload-list-cover">
-        <Icon type="ios-eye-outline" @click.native="handleView(item.url)" size="30"></Icon>
+        <Icon type="ios-eye-outline" @click.native="handleView($showUrl+item.url)" size="30"></Icon>
         <Icon type="ios-trash-outline" @click.native="handleRemove(item)" size="30"></Icon>
       </div>
     </template>
@@ -14,6 +14,7 @@
   </div>
    <Upload
       ref="upload"
+      name="editormd-image-file"
       :show-upload-list="false"
       :default-file-list="defaultList"
       :on-success="handleSuccess"
@@ -25,6 +26,7 @@
       multiple
       type="drag"
       :action="$uploadUrl"
+      accept="image/*"
       style="display: inline-block;width:80px;">
       <div style="width: 80px;height:80px;line-height: 80px;">
           <Icon type="ios-camera" size="50"></Icon>
@@ -47,11 +49,11 @@ export default {
       default:15
     }
   },
-  watch:{
-    defaultList(val){
-      console.log(val)
-    }
-  },
+  // watch:{
+  //   defaultList(val){
+  //     console.log(val)
+  //   }
+  // },
   data() {
     return {
       // defaultList: [
@@ -80,7 +82,7 @@ export default {
     },
     handleSuccess(res, file) {
       if (res.success) {
-        file.name = this.$showUrl + res.result
+        file.name = res.result
         file.url = res.result
       }
     },

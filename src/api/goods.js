@@ -40,6 +40,14 @@ export const goodsDelete = data => {
     method: 'post'
   })
 }
+// 单个商品查询
+export const selectByGoodsId = (params) => {
+  return axios.request({
+    url: 'goodsInfo/selectByGoodsId',
+    params,
+    method: 'get'
+  })
+}
 // 动态属性列表
 export const propertyInfoList = (params) => {
   return axios.request({
