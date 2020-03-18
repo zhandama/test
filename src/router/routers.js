@@ -126,6 +126,53 @@ export default [
     ]
   },
   {
+    path: '/news',
+    name: 'news',
+    component: Main,
+    meta: {
+      icon: 'md-list',
+      title: '前台设置'
+    },
+    children: [
+      {
+        path: 'banner',
+        name: 'banner',
+        meta: {
+          icon: 'ios-people',
+          title: '首页轮播图'
+        },
+        component: () => import('@/view/news/banner.vue')
+      },
+      {
+        path: 'indexcont',
+        name: 'indexcont',
+        meta: {
+          icon: 'ios-people',
+          title: '首页尾部展示栏位'
+        },
+        component: () => import('@/view/news/indexcont.vue')
+      },
+      {
+        path: 'case',
+        name: 'case',
+        meta: {
+          icon: 'ios-people',
+          title: '设计案例'
+        },
+        component: () => import('@/view/news/case.vue')
+      },
+      {
+        path: 'arts',
+        name: 'arts',
+        meta: {
+          icon: 'ios-people',
+          title: '视觉形象 '
+        },
+        component: () => import('@/view/news/arts.vue')
+      },
+    ]
+  },
+  {
     path: '/frontuser',
     name: 'frontuser',
     component: Main,
@@ -181,37 +228,6 @@ export default [
           title: '错误收集'
         },
         component: () => import('@/view/single-page/error-logger.vue')
-      }
-    ]
-  },
-  {
-    path: '/argu',
-    name: 'argu',
-    meta: {
-      hideInMenu: true
-    },
-    component: Main,
-    children: [
-      {
-        path: 'params/:id',
-        name: 'params',
-        meta: {
-          icon: 'md-flower',
-          title: route => `{{ params }}-${route.params.id}`,
-          notCache: true,
-          beforeCloseName: 'before_close_normal'
-        },
-        component: () => import('@/view/argu-page/params.vue')
-      },
-      {
-        path: 'query',
-        name: 'query',
-        meta: {
-          icon: 'md-flower',
-          title: route => `{{ query }}-${route.query.id}`,
-          notCache: true
-        },
-        component: () => import('@/view/argu-page/query.vue')
       }
     ]
   },
