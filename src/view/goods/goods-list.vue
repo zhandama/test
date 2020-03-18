@@ -250,7 +250,7 @@ export default {
       console.log(row)
     },
     changeContent() {
-      this.$refs.editor.setHtml('1')
+      this.$refs.editor.setHtml('')
     },
     handleChange(html, text) {
       this.addparams.description = html
