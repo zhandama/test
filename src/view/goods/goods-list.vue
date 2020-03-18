@@ -34,7 +34,7 @@
       <!--goodsPropertyList start-->
       <div v-if="addparams.goodsPropertyList&&addparams.goodsPropertyList.length>0">
         <div class="textinput" v-for="item in addparams.goodsPropertyList" :key="item.id">
-          <i-input v-model="item.value" placeholder="请输入..." style="width: 350px;float:left">
+          <i-input v-model="item.propertyValue" placeholder="请输入..." style="width: 350px;float:left">
             <span slot="prepend">{{item.name}}：</span>
           </i-input>
           <!-- <div v-if="item.propertyType!=1" class="ivu-input-wrapper ivu-input-wrapper-default ivu-input-type ivu-input-group ivu-input-group-default ivu-input-group-with-prepend" >
@@ -194,27 +194,8 @@ export default {
   },
   methods: {
     categoryChange(value) {
-      console.log(value)
       this.category.value = value
-      console.log(value)
     },
-    // propertyChange(itemName,item){  // 属性多选
-    //   if (!item.value) {
-    //     item.value = itemName.name
-    //   } else {
-    //     var tags = item.value.split(';')
-    //     var p = []
-    //     tags.map(x => {
-    //       if (x != itemName.name) {
-    //         p.push(x)
-    //       }
-    //     })
-    //     if (!tags.find(x => x == itemName.name)) {
-    //       p.push(itemName.name)
-    //     }
-    //     item.value = p.join(";")
-    //   }
-    // },
     showAdd() {
       this.addparams.goodsPropertyList = []
       this.initgoodsPropertyList()
@@ -342,17 +323,6 @@ export default {
         }
       })
     },
-    verifyProperty() {
-      // this.addparams.goodsPropertyList = []
-      // this.property.map(x=>{
-      //   var obj = {
-      //   fieldName: x.fieldName,
-      //   propertyValue: x.value,
-      //   userSelect: x.userSelect
-      // }
-      //   this.addparams.goodsPropertyList.push(obj)
-      // })
-    },
     ok() {
       var vm = this
       if (this.$refs.goodsAttr.uploadList.length > 0) {
@@ -363,7 +333,6 @@ export default {
         this.goodsImg = this.$refs.goodsImg.uploadList
         this.addparams.goodsImg = this.$refs.goodsImg.uploadList.map(x => x.url).join(';')
       }
-      this.verifyProperty()
       if (!this.verifyParams()) {
         this.modal1 = false
         return
@@ -410,7 +379,7 @@ export default {
     initgoodsPropertyList() {
       this.addparams.goodsPropertyList = this.copy(this.property)
       this.addparams.goodsPropertyList.map(x => {
-        x.value = x.defalutValue
+        x.propertyValue = x.defalutValue
       })
     },
     copy(obj) {
@@ -440,14 +409,14 @@ export default {
       this.goodsAttr = row.goodsAttr ? [{ url: row.goodsAttr, name: row.goodsAttr }] : []
       this.goodsImg = row.goodsImg ? row.goodsImg.split(';').map(x => { var a = { url: x, name: x }; return a }) : []
       this.category.value = [row.rootCategoryId]
-      // this.getSelectByGoodsId(row.goodsId)
+      this.getSelectByGoodsId(row.goodsId)
       this.showAdd()
     },
-    // getSelectByGoodsId(goodsId) {
-    //   selectByGoodsId({ goodsId }).then(res => {
-    //     console.log(res)
-    //   })
-    // },
+    getSelectByGoodsId(goodsId) {
+      selectByGoodsId({ goodsId }).then(res => {
+        console.log(res)
+      })
+    },
     addcancel() {
       this.initParams()
     },

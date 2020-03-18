@@ -114,3 +114,11 @@ export const deleteCategory = data => {
     method: 'post'
   })
 }
+// 订单列表
+export const orderList = (params) => {
+  return axios.request({
+    url: 'orderInfo/selectByPage',
+    params,
+    method: 'get'
+  })
+}
