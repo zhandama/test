@@ -48,7 +48,6 @@ export default {
         newsType:1,
         sort:1,
         newsContent:'',
-        videoUrl:''
       },
       newsImg:[],
       modal1: false,
@@ -99,7 +98,6 @@ export default {
       this.params.title= ''
       this.params.titleAttr= ''
       this.params.newsContent= ''
-      this.params.videoUrl=''
       this.newsImg = []
       this.modify = false
     },
