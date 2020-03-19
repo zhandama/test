@@ -36,7 +36,7 @@ export default {
       },
       params: {
         name: '',
-        parentId: 7,
+        parentId: 1,
         remark:''
       },
       modal1: false,
