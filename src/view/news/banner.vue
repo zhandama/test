@@ -1,8 +1,8 @@
 <template>
   <div>
     <Card shadow title="首页轮播图">
-      <i-button type="primary" @click="showAdd">添加</i-button>
-      <tables ref="tables" editable searchable search-place="top" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
+      <i-button type="primary" @click="showAdd" style="margin-bottom:10px">添加</i-button>
+      <tables ref="tables" editable v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
     <Modal v-model="modal1" title="添加/修改" @on-ok="ok" @on-cancel="cancel" :loading="loading" width="700" :styles="{'margin-bottom': '30px'}">
@@ -54,10 +54,22 @@ export default {
       loading: true,
       modify: false,
       columns: [
-        { title: '帐号', key: 'loginAccount', sortable: true },
-        { title: '姓名', key: 'realName' },
-        { title: '性别', key: 'sexName' },
-        { title: '昵称', key: 'nickName' },
+        { title: '标题', key: 'title'},
+        {          title: '缩略图', key: 'titleAttr', render: (h, params) => {
+            return h('img', {
+              attrs: {
+                src: params.row.titleAttr ? this.$showUrl + params.row.titleAttr : ''
+              },
+              //使用style直接定义图片的样式
+              style: {
+                width: '50px',
+                height: '50px',
+                borderRadius: '5px',
+                verticalAlign: 'middle',
+                margin: '5px'
+              }
+            })
+          }        },
         { title: '时间', key: 'createTime' },
         {
           title: '操作',
@@ -76,14 +88,37 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.userEdit(params.row)
+                      this.edit(params.row)
                     }
                   }
-                }, '发货')
+                }, '修改'),
+                // 弹窗层-包含按钮
+                h('Poptip', {
+                  props: {
+                    // 这个参数很重要，影响到是否被遮挡的问题
+                    transfer: true,
+                    // placement: 'bottom',
+                    confirm: true,
+                    title: '你确定要删除吗?'
+                  },
+                  on: {
+                    'on-ok': () => {
+                      this.handleDelete(params)
+                      vm.$emit('input', params.tableData.filter((item, index) => index !== params.row.initRowIndex))
+                    }
+                  }
+                }, [
+                  h('Button', {
+                    props: {
+                      type: 'error',
+                      size: 'small'
+                    }
+                  }, '删除')
+                ])
               ])
             }
           ]
-        } 
+        }
       ],
       tableData: []
     }
@@ -105,7 +140,18 @@ export default {
       this.modal1 = true
     },
     handleDelete(params) {
-
+      deleteNews(params.row.id).then(res => {
+        if (res.data && res.data.success) {
+          this.$Message.success('删除成功')
+        } else {
+          this.$Modal.error({ title: '提示', content: res.data.message })
+          setTimeout(() => {
+            this.$Modal.remove()
+          }, 2000)
+        }
+      }, err => {
+        this.$Message.error('操作失败')
+      })
     },
     handleChange(html, text) {
       // this.params.newsContent = html
@@ -125,7 +171,7 @@ export default {
         this.params.titleAttr = this.$refs.newsImg.uploadList.map(x => x.url).join(';')
       }
       if (this.modify) {
-        goodsModify(this.addparams).then(res => {
+        modifyNews(this.params).then(res => {
           if (res.data && res.data.success) {
             this.$Message.success('操作成功')
             this.initParams()
@@ -161,6 +207,12 @@ export default {
           this.modal1 = false
         })
       }
+    },
+    edit(row){
+      this.modify = true
+      this.newsImg = row.titleAttr ? [{ url: row.titleAttr, name: row.titleAttr }] : []
+      this.params = row
+      this.showAdd()
     },
     cancel() {
 
