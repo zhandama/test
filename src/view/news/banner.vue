@@ -40,22 +40,22 @@ export default {
       listparams: {
         pageNum: 1,
         pageSize: 30,
-        newsType:1
+        newsType: 1
       },
       params: {
-        title:'',
-        titleAttr:'',
-        newsType:1,
-        sort:1,
-        newsContent:'',
+        title: '',
+        titleAttr: '',
+        newsType: 1,
+        sort: 1,
+        newsContent: '',
       },
-      newsImg:[],
+      newsImg: [],
       modal1: false,
       loading: true,
       modify: false,
       columns: [
-        { title: '标题', key: 'title'},
-        {          title: '缩略图', key: 'titleAttr', render: (h, params) => {
+        { title: '标题', key: 'title' },
+        { title: '缩略图', key: 'titleAttr', render: (h, params) => {
             return h('img', {
               attrs: {
                 src: params.row.titleAttr ? this.$showUrl + params.row.titleAttr : ''
@@ -69,7 +69,8 @@ export default {
                 margin: '5px'
               }
             })
-          }        },
+          }
+        },
         { title: '时间', key: 'createTime' },
         {
           title: '操作',
@@ -130,14 +131,15 @@ export default {
   },
   methods: {
     initParams() {
-      this.params.title= ''
-      this.params.titleAttr= ''
-      this.params.newsContent= ''
+      this.params.title = ''
+      this.params.titleAttr = ''
+      this.params.newsContent = ''
       this.newsImg = []
       this.modify = false
     },
     showAdd() {
       this.modal1 = true
+      this.$refs.editor.setHtml(this.params.newsContent)
     },
     handleDelete(params) {
       deleteNews(params.row.id).then(res => {
@@ -208,7 +210,7 @@ export default {
         })
       }
     },
-    edit(row){
+    edit(row) {
       this.modify = true
       this.newsImg = row.titleAttr ? [{ url: row.titleAttr, name: row.titleAttr }] : []
       this.params = row
@@ -220,7 +222,6 @@ export default {
   },
   mounted() {
     this.getList()
-    this.$refs.editor.setHtml(this.params.newsContent)
   }
 }
 </script>

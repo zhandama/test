@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card shadow title="订单列表">
-      <tables ref="tables" editable searchable search-place="top" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0"/>
+      <tables ref="tables" editable searchable search-place="top" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
     <Button style="margin: 10px 0;" type="primary" @click="exportExcel">导出为Csv文件</Button>
@@ -16,13 +16,13 @@ export default {
   components: {
     Tables
   },
-  data () {
+  data() {
     return {
       listparams: {
         pageNum: 1,
         pageSize: 30,
-        createStartTime:'2020-1-1',
-        createEndTime:'2020-1-7'
+        createStartTime: '2020-1-1',
+        createEndTime: '2020-1-7'
       },
       params: {
         loginAccount: '',
@@ -73,12 +73,12 @@ export default {
     }
   },
   watch: {
-    modal1 (val) {
+    modal1(val) {
       console.log(val)
     }
   },
   methods: {
-    initParams () {
+    initParams() {
       this.params = {
         loginAccount: '',
         realName: '',
@@ -91,34 +91,34 @@ export default {
       }
       this.modify = false
     },
-    showAddUser () {
+    showAddUser() {
       this.modal1 = true
     },
-    handleDelete (params) {
+    handleDelete(params) {
 
     },
-    changepage (page) {
+    changepage(page) {
       this.listparams.pageNum = page
       this.getList()
     },
-    getList () {
+    getList() {
       orderList(this.listparams).then(res => {
         this.tableData = res.data.result
       })
     },
-    ok () {
-      
+    ok() {
+
     },
-    cancel(){
-      
+    cancel() {
+
     },
-    exportExcel () {
+    exportExcel() {
       this.$refs.tables.exportCsv({
         filename: `table-${(new Date()).valueOf()}.csv`
       })
     }
   },
-  mounted () {
+  mounted() {
     this.getList()
   }
 }
