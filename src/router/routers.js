@@ -177,7 +177,8 @@ export default [
     name: 'frontuser',
     component: Main,
     meta: {
-      hideInBread: true
+      icon: 'md-list',
+      title: '前台用户'
     },
     children: [
       {
@@ -188,7 +189,25 @@ export default [
           title: '前台用户列表'
         },
         component: () => import('@/view/user/user-list.vue')
-      }
+      },
+      {
+        path: 'design',
+        name: 'design',
+        meta: {
+          icon: 'md-list',
+          title: '设计师审核'
+        },
+        component: () => import('@/view/user/design-list.vue')
+      },
+      {
+        path: 'address',
+        name: 'address',
+        meta: {
+          icon: 'md-list',
+          title: '收货地址'
+        },
+        component: () => import('@/view/user/address-list.vue')
+      },
     ]
   },
   {

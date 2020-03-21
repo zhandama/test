@@ -7,14 +7,20 @@
     </Card>
     <Modal v-model="modal1" title="添加/修改" @on-ok="ok" @on-cancel="cancel" :loading="loading">
       <div class="textinput">
-        <i-input v-model="params.name" placeholder="请输入..." style="width: 300px" :disabled="modify">
+        <i-input v-model="params.name" placeholder="请输入..." style="width: 300px;float:left" :disabled="modify">
           <span slot="prepend">分类名称<span class="xing">*</span>：</span>
         </i-input>
+        <span style="line-height:30px;float:left;padding-left:7px;color:#aaa">(尽量四个字以内)</span>
+        <div style="clear:both"></div>
       </div>
       <div class="textinput">
         <i-input v-model="params.remark" placeholder="分类备注..." style="width: 300px">
-          <span slot="prepend">备注：</span>
+          <span slot="prepend">别名：</span>
         </i-input>
+      </div>
+      <div class="textinput" v-if="params.parentId=='-1'">
+        <span slot="prepend">首页分类展示图片：</span>
+        <uploadImg ref="imageUrl" :maxlength="3" :defaultList="imageUrl" v-if="modal1" />
       </div>
     </Modal>
   </div>
@@ -23,10 +29,12 @@
 <script>
 import Tables from '_c/tables'
 import { categoryList, addCategory, enableCategory, deleteCategory } from '@/api/goods'
+import uploadImg from './upload.vue'
 export default {
   name: 'tables_page',
   components: {
-    Tables
+    Tables,
+    uploadImg
   },
   data () {
     return {
@@ -37,8 +45,10 @@ export default {
       params: {
         name: '',
         parentId: -1,
-        remark:''
+        remark:'',
+        imageUrl:''
       },
+      imageUrl:[],
       modal1: false,
       loading: true,
       modify: false,
@@ -104,9 +114,11 @@ export default {
     initParams () {
       this.params = {
         name: '',
-        parentId: 0,
-        remark:''
+        parentId: -1,
+        remark:'',
+        imageUrl:''
       }
+      this.imageUrl = []
       this.modify = false
     },
     showAdd () {
@@ -144,6 +156,10 @@ export default {
     },
     ok () {
       var vm = this
+      if (this.$refs.imageUrl.uploadList.length > 0) {
+        this.imageUrl = this.$refs.imageUrl.uploadList
+        this.params.imageUrl = this.$refs.imageUrl.uploadList.map(x => x.url).join(';')
+      }
       if (this.params.name.length<1) {
         this.modal1 = false
         this.$Modal.error({

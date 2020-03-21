@@ -18,7 +18,7 @@
           <span slot="prepend">原价￥<span class="xing">*</span>：</span>
         </i-input>
         <i-input v-model="addparams.vipPrice" placeholder="请输入..." style="width: 200px;float:left;margin-left:30px">
-          <span slot="prepend">会员价￥<span class="xing">*</span>：</span>
+          <span slot="prepend">会员价￥：</span>
         </i-input>
         <div style="clear:both"></div>
       </div>
@@ -43,7 +43,7 @@
               <Checkbox v-for="(itemName,itemindex) in item.data" :checked.sync="itemName.checked" @on-change="propertyChange(itemName,item)" :key="itemindex">{{itemName.name}}</Checkbox>
             </div>
           </div> -->
-          <Checkbox v-if="item.propertyType!=1" v-model="item.userSelect" style="float:left;padding-top:7px;padding-left:10px">是否需要买家选择</Checkbox>
+          <Checkbox v-model="item.userSelect" style="float:left;padding-top:7px;padding-left:10px">是否需要买家选择</Checkbox>
           <div v-if="item.propertyType!=1" style="line-height:30px;float:left;padding-left:7px;color:#aaa">(多属性英文分号隔开)</div>
           <div style="clear:both"></div>
         </div>
@@ -257,7 +257,6 @@ export default {
       // console.log(html,'2222222', text)
     },
     verifyParams() {
-      console.log(this.addparams)
       if (this.addparams.title.length < 1) {
         this.$Modal.error({
           title: '提示',
@@ -276,16 +275,7 @@ export default {
           }
         })
         return false
-      } else if (this.addparams.vipPrice <= 0) {
-        this.$Modal.error({
-          title: '提示',
-          content: '请输入会员价格',
-          onOk: () => {
-            this.showAdd()
-          }
-        })
-        return false
-      } else if (!this.category.value) {
+      } else if (this.category.value.length==0) {
         this.$Modal.error({
           title: '提示',
           content: '请选择商品类型',
@@ -302,6 +292,7 @@ export default {
         if (res.data && res.data.success) {
           this.category = res.data.result
           if (this.category && this.category.list.length > 0) {
+            this.category.value = []
             this.category.data = this.category.list.map(x => {
               var obj = {
                 value: x.id,
@@ -376,10 +367,19 @@ export default {
         })
       }
     },
-    initgoodsPropertyList() {
+    initgoodsPropertyList(list) {
       this.addparams.goodsPropertyList = this.copy(this.property)
       this.addparams.goodsPropertyList.map(x => {
         x.propertyValue = x.defalutValue
+        x.userSelect = false
+        if (list) {
+          list.map(v=>{
+            if (x.fieldName == v.fieldName){
+              x.propertyValue = v.propertyValue
+              x.userSelect = v.userSelect
+            }
+          })
+        }
       })
     },
     copy(obj) {
@@ -414,7 +414,11 @@ export default {
     },
     getSelectByGoodsId(goodsId) {
       selectByGoodsId({ goodsId }).then(res => {
-        console.log(res)
+        console.log(res.data.result.goodsPropertyList)
+        if (res.data.result&&res.data.result.goodsPropertyList) {
+          let list = res.data.result.goodsPropertyList
+          this.initgoodsPropertyList(list)
+        }
       })
     },
     addcancel() {
