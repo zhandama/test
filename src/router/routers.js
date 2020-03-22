@@ -199,15 +199,6 @@ export default [
         },
         component: () => import('@/view/user/design-list.vue')
       },
-      {
-        path: 'address',
-        name: 'address',
-        meta: {
-          icon: 'md-list',
-          title: '收货地址'
-        },
-        component: () => import('@/view/user/address-list.vue')
-      },
     ]
   },
   {
