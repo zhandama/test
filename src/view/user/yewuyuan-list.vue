@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card shadow title="设计师审核">
+    <Card shadow title="业务员审核">
       <tables ref="tables" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0"/>
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>

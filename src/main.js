@@ -41,6 +41,8 @@ Vue.prototype.$config = config
  */
 Vue.prototype.$uploadUrl = '/backend-new/api/goodsInfo/batchGoodsImage'
 Vue.prototype.$showUrl = 'http://27n5n57140.wicp.vip/backend-new/'
+Vue.prototype.$showUrl2 = 'http://27n5n57140.wicp.vip/wx-restapi/'
+
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
 

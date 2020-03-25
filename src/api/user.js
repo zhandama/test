@@ -58,3 +58,21 @@ export const scoreList = (params) => {
     method: 'get'
   })
 }
+
+// 获取前台用户列表
+export const buyerInfoList = (params) => {
+  return axios.request({
+    url: 'buyerInfo/selectByPage',
+    params,
+    method: 'get'
+  })
+}
+
+// 审核
+export const buyerInfoAudit = data => {
+  return axios.request({
+    url: 'buyerInfo/audit',
+    data,
+    method: 'post'
+  })
+}

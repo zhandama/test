@@ -188,7 +188,7 @@ export default [
           icon: 'md-list',
           title: '前台用户列表'
         },
-        component: () => import('@/view/user/user-list.vue')
+        component: () => import('@/view/user/buyer-list.vue')
       },
       {
         path: 'design',
@@ -198,6 +198,15 @@ export default [
           title: '设计师审核'
         },
         component: () => import('@/view/user/design-list.vue')
+      },
+      {
+        path: 'yewuyuan',
+        name: 'yewuyuan',
+        meta: {
+          icon: 'md-list',
+          title: '业务员审核'
+        },
+        component: () => import('@/view/user/yewuyuan-list.vue')
       },
     ]
   },
