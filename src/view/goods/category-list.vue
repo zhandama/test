@@ -28,7 +28,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { categoryList, addCategory, enableCategory, deleteCategory } from '@/api/goods'
+import { categoryList, addCategory, enableCategory, deleteCategory ,modifyCategory} from '@/api/goods'
 import uploadImg from './upload.vue'
 export default {
   name: 'tables_page',
@@ -79,6 +79,21 @@ export default {
                     }
                   }
                 }, params.row.enable ? '禁用' : '启用'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.Edit(params.row)
+                      console.log('修改')
+                    }
+                  }
+                }, '修改'),
                 // 弹窗层-包含按钮
                 h('Poptip', {
                   props: {
@@ -199,6 +214,9 @@ export default {
           this.$Message.error('操作失败')
         }
       })
+    },
+    Edit(row){
+      this.modify = true
     },
     cancel () {
       this.initParams()

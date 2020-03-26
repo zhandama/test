@@ -105,6 +105,15 @@ export const enableCategory = data => {
     method: 'post'
   })
 }
+
+export const modifyCategory = data => {
+  return axios.request({
+    url: 'category/modifyCategory',
+    data,
+    method: 'post'
+  })
+}
+
 // 商品类别删除
 export const deleteCategory = data => {
   return axios.request({
