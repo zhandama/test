@@ -131,3 +131,19 @@ export const orderList = (params) => {
     method: 'get'
   })
 }
+// 订单发货
+export const deliveryOrder = data => {
+  return axios.request({
+    url: 'orderInfo/deliveryOrder',
+    data,
+    method: 'post'
+  })
+}
+// 手动补单
+export const manualPayOrder = (params) => {
+  return axios.request({
+    url: 'orderInfo/manualPayOrder',
+    params,
+    method: 'post'
+  })
+}

@@ -138,6 +138,7 @@ export default {
     },
     showAdd() {
       this.modal1 = true
+      this.$refs.editor.setHtml(this.params.newsContent)
     },
     handleDelete(params) {
       deleteNews(params.row.id).then(res => {
@@ -220,7 +221,6 @@ export default {
   },
   mounted() {
     this.getList()
-    this.$refs.editor.setHtml(this.params.newsContent)
   }
 }
 </script>

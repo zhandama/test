@@ -12,8 +12,8 @@
         </i-input>
       </div>
       <div class="textinput">
-        <span slot="prepend">展示图片：</span>
-        <uploadImg ref="newsImg" :maxlength="1" :defaultList="newsImg" v-if="modal1" />
+        <span slot="prepend">上传视频：</span>
+        <uploadFile ref="newsImg" :maxlength="1" :defaultList="newsImg" v-if="modal1" />
       </div>
       <div class="textinput">
         <span slot="prepend">内容描述：</span>
@@ -26,13 +26,13 @@
 <script>
 import Tables from '_c/tables'
 import { addNews, deleteNews, modifyNews, contentList, contentId } from '@/api/news'
-import uploadImg from '../goods/upload.vue'
+import uploadFile from './uploadFile.vue'
 import Editor from '_c/editor'
 export default {
   name: 'tables_page',
   components: {
     Tables,
-    uploadImg,
+    uploadFile,
     Editor
   },
   data() {
@@ -44,10 +44,9 @@ export default {
       },
       params: {
         title:'',
-        titleAttr:'',
+        videoUrl:'',
         newsType:4,
         sort:1,
-        newsContent:'',
       },
       newsImg:[],
       modal1: false,
@@ -55,21 +54,22 @@ export default {
       modify: false,
       columns: [
         { title: '标题', key: 'title'},
-        {          title: '缩略图', key: 'titleAttr', render: (h, params) => {
-            return h('img', {
-              attrs: {
-                src: params.row.titleAttr ? this.$showUrl + params.row.titleAttr : ''
-              },
-              //使用style直接定义图片的样式
-              style: {
-                width: '50px',
-                height: '50px',
-                borderRadius: '5px',
-                verticalAlign: 'middle',
-                margin: '5px'
-              }
-            })
-          }        },
+        { title: '视频', key: this.$showUrl +'videoUrl'},
+        // {          title: '缩略图', key: 'titleAttr', render: (h, params) => {
+        //     return h('img', {
+        //       attrs: {
+        //         src: params.row.titleAttr ? this.$showUrl + params.row.titleAttr : ''
+        //       },
+        //       //使用style直接定义图片的样式
+        //       style: {
+        //         width: '50px',
+        //         height: '50px',
+        //         borderRadius: '5px',
+        //         verticalAlign: 'middle',
+        //         margin: '5px'
+        //       }
+        //     })
+        //   }        },
         { title: '时间', key: 'createTime' },
         {
           title: '操作',
@@ -131,13 +131,14 @@ export default {
   methods: {
     initParams() {
       this.params.title= ''
-      this.params.titleAttr= ''
+      this.params.videoUrl= ''
       this.params.newsContent= ''
       this.newsImg = []
       this.modify = false
     },
     showAdd() {
       this.modal1 = true
+      this.$refs.editor.setHtml(this.params.newsContent)
     },
     handleDelete(params) {
       deleteNews(params.row.id).then(res => {
@@ -168,7 +169,7 @@ export default {
     ok() {
       if (this.$refs.newsImg.uploadList.length > 0) {
         this.newsImg = this.$refs.newsImg.uploadList
-        this.params.titleAttr = this.$refs.newsImg.uploadList.map(x => x.url).join(';')
+        this.params.videoUrl = this.$refs.newsImg.uploadList.map(x => x.url).join(';')
       }
       if (this.modify) {
         modifyNews(this.params).then(res => {
@@ -210,7 +211,7 @@ export default {
     },
     edit(row){
       this.modify = true
-      this.newsImg = row.titleAttr ? [{ url: row.titleAttr, name: row.titleAttr }] : []
+      this.newsImg = row.videoUrl ? [{ url: row.videoUrl, name: row.videoUrl }] : []
       this.params = row
       this.showAdd()
     },
@@ -220,7 +221,6 @@ export default {
   },
   mounted() {
     this.getList()
-    this.$refs.editor.setHtml(this.params.newsContent)
   }
 }
 </script>
