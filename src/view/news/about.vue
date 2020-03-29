@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card shadow title="设计案例">
+    <Card shadow title="公司文化">
       <i-button type="primary" @click="add()" style="margin-bottom:10px">添加</i-button>
       <tables ref="tables" editable v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
@@ -40,12 +40,12 @@ export default {
       listparams: {
         pageNum: 1,
         pageSize: 30,
-        newsType:3
+        newsType:5 // 1：首页轮播图，2：首页尾部展示栏位，3：设计案例，4：视觉形象 ,5公司简介
       },
       params: {
         title:'',
         titleAttr:'',
-        newsType:3,
+        newsType:5,
         sort:1,
         newsContent:'',
       },

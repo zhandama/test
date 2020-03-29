@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card shadow title="首页轮播图">
-      <i-button type="primary" @click="showAdd" style="margin-bottom:10px">添加</i-button>
+      <i-button type="primary" @click="add()" style="margin-bottom:10px">添加</i-button>
       <tables ref="tables" editable v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>

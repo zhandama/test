@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card shadow title="视觉形象">
-      <i-button type="primary" @click="showAdd" style="margin-bottom:10px">添加</i-button>
+      <i-button type="primary" @click="add()" style="margin-bottom:10px">添加</i-button>
       <tables ref="tables" editable v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
@@ -130,15 +130,22 @@ export default {
   },
   methods: {
     initParams() {
-      this.params.title= ''
-      this.params.videoUrl= ''
-      this.params.newsContent= ''
+      this.params = {
+        title:'',
+        videoUrl:'',
+        newsContent:'',
+        newsType:4
+      }
       this.newsImg = []
       this.modify = false
     },
     showAdd() {
       this.modal1 = true
       this.$refs.editor.setHtml(this.params.newsContent)
+    },
+    add() {
+      this.initParams()
+      this.showAdd()
     },
     handleDelete(params) {
       deleteNews(params.row.id).then(res => {
@@ -212,7 +219,7 @@ export default {
     edit(row){
       this.modify = true
       this.newsImg = row.videoUrl ? [{ url: row.videoUrl, name: row.videoUrl }] : []
-      this.params = row
+      this.params = JSON.parse(JSON.stringify(row))
       this.showAdd()
     },
     cancel() {

@@ -170,6 +170,15 @@ export default [
         },
         component: () => import('@/view/news/arts.vue')
       },
+      {
+        path: 'about',
+        name: 'about',
+        meta: {
+          icon: 'ios-people',
+          title: '公司文化 '
+        },
+        component: () => import('@/view/news/about.vue')
+      }
     ]
   },
   {

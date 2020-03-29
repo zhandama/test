@@ -3,11 +3,11 @@
   <div class="demo-upload-list" v-for="item in uploadList">
     <template v-if="item.status === 'finished'">
       <!-- <img :src="$showUrl+item.url"> -->
-      <div>{{item.url}}</div>
-      <!-- <div class="demo-upload-list-cover">
+      <div><video :src="$showUrl+item.url" style="max-width: 82px;max-height:82px" autoplay muted></video></div>
+      <div class="demo-upload-list-cover">
         <Icon type="ios-eye-outline" @click.native="handleView($showUrl+item.url)" size="30"></Icon>
         <Icon type="ios-trash-outline" @click.native="handleRemove(item)" size="30"></Icon>
-      </div> -->
+      </div>
     </template>
     <template v-else>
       <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
@@ -31,6 +31,9 @@
           <Icon type="ios-camera" size="50"></Icon>
       </div>
   </Upload>
+  <Modal title="查看" v-model="visible">
+    <video :src="imgName" v-if="visible" style="max-width: 400px;max-height:300px" autoplay></video>
+  </Modal>
 </div>
 </template>
 <script>
@@ -88,7 +91,7 @@ export default {
       const check = this.uploadList.length < this.maxlength;
       if (!check) {
         this.$Notice.warning({
-          title: '最多上传'+this.maxlength+'张图片'
+          title: '最多上传'+this.maxlength+'文件'
         });
       }
       return check;
@@ -99,10 +102,11 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .demo-upload-list {
   display: inline-block;
   height: 82px;
+  width: auto !important;
   min-width:82px;
   text-align: center;
   line-height: 82px;
