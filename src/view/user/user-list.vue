@@ -48,12 +48,24 @@
         </i-input>
       </div>
     </Modal>
+    <Modal v-model="modal2" title="修改密码" @on-ok="okPws" :loading="loading">
+      <div class="textinput">
+        <i-input v-model="pwsParmas.prePassword" placeholder="请输入..." style="width: 300px" :disabled="modify">
+          <span slot="prepend">原密码<span class="xing">*</span>：</span>
+        </i-input>
+      </div>
+      <div class="textinput">
+        <i-input v-model="pwsParmas.newPassword" placeholder="请输入..." style="width: 300px" :disabled="modify">
+          <span slot="prepend">新密码<span class="xing">*</span>：</span>
+        </i-input>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
-import { getTableData, deleteUserForSystem, addUser, modifyUserForSystem } from '@/api/user'
+import { getTableData, deleteUserForSystem, addUser, modifyUserForSystem,modifyPwdForSystem } from '@/api/user'
 export default {
   name: 'tables_page',
   components: {
@@ -64,6 +76,10 @@ export default {
       listparams: {
         pageNum: 1,
         pageSize: 30
+      },
+      pwsParmas:{
+        prePassword:'',
+        newPassword:'',
       },
       params: {
         loginAccount: '',
@@ -76,6 +92,7 @@ export default {
         userType: 1
       },
       modal1: false,
+      modal2:false,
       loading: true,
       modify: false,
       columns: [
@@ -83,10 +100,11 @@ export default {
         { title: '姓名', key: 'realName' },
         { title: '性别', key: 'sexName' },
         { title: '昵称', key: 'nickName' },
-        { title: '时间', key: 'createTime' },
+        { title: '时间', key: 'createTime',width: 150 },
         {
           title: '操作',
           key: 'handle',
+          width: 230,
           // options: ['delete'],
           button: [
             (h, params, vm) => {
@@ -104,7 +122,21 @@ export default {
                       this.userEdit(params.row)
                     }
                   }
-                }, '修改'),
+                }, '修改信息'),
+                h('Button', {
+                  props: {
+                    type: 'warning',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.userPws(params.row)
+                    }
+                  }
+                }, '修改密码'),
                 // 弹窗层-包含按钮
                 h('Poptip', {
                   props: {
@@ -220,6 +252,29 @@ export default {
         }
       }
       return true
+    },
+    userPws(row){
+      this.modal2 = true
+      this.pwsParmas.id = row.id
+      this.pwsParmas.prePassword = ''
+      this.pwsParmas.newPassword = ''
+    },
+    okPws(){
+      this.modal2 = false
+      modifyPwdForSystem(this.pwsParmas).then(res => {
+        if (res.data && res.data.success) {
+          this.$Message.success('操作成功')
+        } else {
+          this.$Modal.error({
+            title: '提示',
+            content: res.data.message,
+            onOk: () => {
+              this.modal2 = true
+            }
+          })
+        }
+        this.modal1 = false
+      })
     },
     ok () {
       var vm = this

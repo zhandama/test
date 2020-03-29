@@ -124,10 +124,11 @@ export default {
             })
           }        },
         { title: '状态', key: 'stateName' },
-        { title: '时间', key: 'createTime' },
+        { title: '时间', key: 'createTime',width: 150, },
         {
           title: '操作',
           key: 'handle',
+          width: 200,
           // options: ['delete'],
           button: [
             (h, params, vm) => {

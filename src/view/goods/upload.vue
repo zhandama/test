@@ -49,23 +49,8 @@ export default {
       default:15
     }
   },
-  // watch:{
-  //   defaultList(val){
-  //     console.log(val)
-  //   }
-  // },
   data() {
     return {
-      // defaultList: [
-      //   {
-      //     'name': 'a42bdcc1178e62b4694c830f028db5c0',
-      //     'url': 'http://27n5n57140.wicp.vip/backend-new/imgupload/goods/1584354993064.jpg'
-      //   },
-      //   {
-      //     'name': 'bc7521e033abdd1e92222d733590f104',
-      //     'url': 'http://27n5n57140.wicp.vip/backend-new/imgupload/goods/1584354993064.jpg'
-      //   }
-      // ],
       imgName: '',
       visible: false,
       uploadList: []

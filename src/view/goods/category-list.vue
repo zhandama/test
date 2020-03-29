@@ -7,7 +7,7 @@
     </Card>
     <Modal v-model="modal1" title="添加/修改" @on-ok="ok" @on-cancel="cancel" :loading="loading">
       <div class="textinput">
-        <i-input v-model="params.name" placeholder="请输入..." style="width: 300px;float:left" :disabled="modify">
+        <i-input v-model="params.name" placeholder="请输入..." style="width: 300px;float:left">
           <span slot="prepend">分类名称<span class="xing">*</span>：</span>
         </i-input>
         <span style="line-height:30px;float:left;padding-left:7px;color:#aaa">(尽量四个字以内)</span>
@@ -46,7 +46,8 @@ export default {
         name: '',
         parentId: -1,
         remark:'',
-        imageUrl:''
+        imageUrl:'',
+        categoryType:0
       },
       imageUrl:[],
       modal1: false,
@@ -61,6 +62,7 @@ export default {
         {
           title: '操作',
           key: 'handle',
+          width: 230,
           // options: ['delete'],
           button: [
             (h, params, vm) => {
@@ -186,24 +188,46 @@ export default {
           })
         return
       }
-      addCategory(this.params).then(res => {
-        if (res.data && res.data.success) {
-          this.$Message.success('操作成功')
-          this.initParams()
-          this.listparams.pageNum = 1
-          this.getList()
-        } else {
-          this.$Modal.error({
-            title: '提示',
-            content: res.data.message,
-          })
-        }
-        this.modal1 = false
+      if (this.modify) {
+        modifyCategory(this.params).then(res => {
+          if (res.data && res.data.success) {
+            this.$Message.success('操作成功')
+            this.initParams()
+            this.listparams.pageNum = 1
+            this.getList()
+          } else {
+            this.$Modal.error({
+              title: '提示',
+              content: res.data.message,
+            })
+          }
+          this.modal1 = false
 
-      }, err => {
-        this.modal1 = false
-        this.$Message.error(err.response.data.message)
-      })
+        }, err => {
+          this.modal1 = false
+          this.$Message.error(err.response.data.message)
+        })
+      } else {
+        addCategory(this.params).then(res => {
+          if (res.data && res.data.success) {
+            this.$Message.success('操作成功')
+            this.initParams()
+            this.listparams.pageNum = 1
+            this.getList()
+          } else {
+            this.$Modal.error({
+              title: '提示',
+              content: res.data.message,
+            })
+          }
+          this.modal1 = false
+
+        }, err => {
+          this.modal1 = false
+          this.$Message.error(err.response.data.message)
+        })
+      }
+      
     },
     enable(row) {
       enableCategory({id:row.id,enable:!row.enable}).then(res => {
@@ -217,6 +241,10 @@ export default {
     },
     Edit(row){
       this.modify = true
+      this.imageUrl = row.imageUrl ? row.imageUrl.split(';').map(x => { var a = { url: x, name: x }; return a }) : []
+      this.params = JSON.parse(JSON.stringify(row))
+      this.params.categoryType = 0
+      this.showAdd()
     },
     cancel () {
       this.initParams()

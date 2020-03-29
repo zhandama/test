@@ -50,6 +50,14 @@ export const modifyUserForSystem = data => {
     method: 'post'
   })
 }
+// 修改密码
+export const modifyPwdForSystem = data => {
+  return axios.request({
+    url: 'userInfo/modifyPwdForSystem',
+    data,
+    method: 'post'
+  })
+}
 // 获取积分列表
 export const scoreList = (params) => {
   return axios.request({

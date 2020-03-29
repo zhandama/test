@@ -39,10 +39,10 @@ Vue.prototype.$config = config
 /**
  * 注册指令
  */
-Vue.prototype.$uploadUrl = '/backend-new/api/goodsInfo/batchGoodsImage'
-Vue.prototype.$uploadFile = '/backend-new/api/content/uploadVideo'
-Vue.prototype.$showUrl = 'http://27n5n57140.wicp.vip/backend-new/'
-Vue.prototype.$showUrl2 = 'http://27n5n57140.wicp.vip/wx-restapi/'
+Vue.prototype.$uploadUrl = '/backend/api/goodsInfo/batchGoodsImage'
+Vue.prototype.$uploadFile = '/backend/api/content/uploadVideo'
+Vue.prototype.$showUrl = '/backend/'
+Vue.prototype.$showUrl2 = '/wx-restapi/'
 
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
