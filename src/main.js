@@ -41,8 +41,7 @@ Vue.prototype.$config = config
  */
 Vue.prototype.$uploadUrl = '/backend/api/goodsInfo/batchGoodsImage'
 Vue.prototype.$uploadFile = '/backend/api/content/uploadVideo'
-Vue.prototype.$showUrl = '/backend/'
-Vue.prototype.$showUrl2 = '/wx-restapi/'
+Vue.prototype.$showUrl = 'https://www.metsco.net/images/'
 
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)

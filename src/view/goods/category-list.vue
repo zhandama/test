@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card shadow title="家具分类">
-      <i-button type="primary" @click="showAdd" style="margin-bottom:10px">添加一级分类</i-button>
+      <i-button type="primary" @click="showAdd" style="margin-bottom:10px">添加分类</i-button>
       <tables ref="tables" v-model="list.list" :columns="columns" @on-delete="handleDelete" v-if="list.list&&list.list.length>0"/>
       <Page :total="list.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>

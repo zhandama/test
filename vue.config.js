@@ -11,7 +11,7 @@ const resolve = dir => {
 // 如果您的应用程序部署在子路径中，则需要在这指定子路径
 // 例如：https://www.foobar.com/my-app/
 // 需要将它改为'/my-app/'
-// iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
+// iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/`
 const BASE_URL = process.env.NODE_ENV === 'production'
   ? '/'
   : '/'
@@ -39,8 +39,8 @@ module.exports = {
   // 这里写你调用接口的基础路径，来解决跨域，如果设置了代理，那你本地开发环境的axios的baseUrl要写为 '' ，即空字符串
   devServer: {
     proxy: {
-      '/backend-new/api': {
-        target: 'http://27n5n57140.wicp.vip/',
+      '/backend/api': {
+        target: 'https://www.metsco.net/',
         changeOrigin: true
       }
     }

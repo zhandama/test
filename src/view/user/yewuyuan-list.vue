@@ -8,9 +8,9 @@
       <div v-if="row.images">
         <div class="">上传的图片：<br/></div>
           <div class="demo-upload-list" v-for="(url,index) in row.images" :key="index">
-            <img :src="$showUrl2+url" >
+            <img :src="$showUrl+url" >
             <div class="demo-upload-list-cover">
-                <Icon type="ios-eye-outline" size='30' @click.native="handleView($showUrl2+url)"></Icon>
+                <Icon type="ios-eye-outline" size='30' @click.native="handleView($showUrl+url)"></Icon>
             </div>
           </div>
       </div>
