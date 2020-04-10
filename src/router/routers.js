@@ -204,7 +204,7 @@ export default [
         name: 'design',
         meta: {
           icon: 'md-list',
-          title: '设计师审核'
+          title: '设计师'
         },
         component: () => import('@/view/user/design-list.vue')
       },

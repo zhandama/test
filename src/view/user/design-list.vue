@@ -1,18 +1,42 @@
 <template>
   <div>
     <Card shadow title="设计师审核">
-      <tables ref="tables" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0"/>
+      <tables ref="tables" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
-    <Modal v-model="modal1" title="审核" @on-ok="ok" @on-cancel="cancel" :loading="loading" okText="审核通过" cancelText="审核不通过">
+    <Modal v-model="modal1" title="审核" @on-ok="ok" @on-cancel="cancel" :loading="loading" okText="确定">
+      <div>
+        <i-input v-model="row.nickName" style="width: 230px;margin-bottom:10px;float:left" readonly>
+          <span slot="prepend">微信昵称：</span>
+        </i-input>
+        <div style="float:left;">
+          <div style="float:left;line-height:30px;padding-left:20px">头像：</div><img :src="row.avatarUrl" width='30px' />
+        </div>
+      </div>
+      <i-input v-model="params.realName" placeholder="请输入姓名" style="width: 430px;margin-bottom:10px">
+        <span slot="prepend">姓名：</span>
+      </i-input>
+      <i-input v-model="params.tele" placeholder="请输入电话" style="width: 430px;margin-bottom:10px">
+        <span slot="prepend">电话：</span>
+      </i-input>
+      <i-input v-model="params.companyName" placeholder="请输入输入公司信息" style="width: 430px;margin-bottom:10px">
+        <span slot="prepend">公司信息：</span>
+      </i-input>
       <div v-if="row.images">
-        <div class="">上传的图片：<br/></div>
-          <div class="demo-upload-list" v-for="(url,index) in row.images" :key="index">
-            <img :src="$showUrl2+url" >
-            <div class="demo-upload-list-cover">
-                <Icon type="ios-eye-outline" size='30' @click.native="handleView($showUrl2+url)"></Icon>
-            </div>
+        <div class="">上传的图片：<br /></div>
+        <div class="demo-upload-list" v-for="(url,index) in row.images" :key="index">
+          <img :src="$showUrl+url">
+          <div class="demo-upload-list-cover">
+            <Icon type="ios-eye-outline" size='30' @click.native="handleView($showUrl+url)"></Icon>
           </div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <i-button type="error" style="margin-right:10px" @click="addUserInfo('no')">审核不通过</i-button>
+        <i-button type="primary" @click="addUserInfo()">审核通过完善信息</i-button>
+      </div>
+      <div slot="footer">
+
       </div>
     </Modal>
     <Modal title="查看大图" v-model="visible">
@@ -23,28 +47,38 @@
 
 <script>
 import Tables from '_c/tables'
-import { buyerInfoList, buyerInfoAudit } from '@/api/user'
+import { buyerInfoList, buyerInfoAudit, modifyBuyerInfo } from '@/api/user'
 export default {
   name: 'tables_page',
   components: {
     Tables
   },
-  data () {
+  data() {
     return {
+      params: {
+        companyName: "",
+        id: 0,
+        realName: "",
+        tele: ""
+      },
       listparams: {
         pageNum: 1,
         pageSize: 30,
-        state:this.$route.name=='design'?3:2
+        userType:3,
+        // state: this.$route.name == 'design' ? 3 : 2
       },
       row: {},
       modal1: false,
       loading: true,
       visible: false,
       columns: [
+        { title: '真实姓名', key: 'realName' },
+        { title: '电话', key: 'tele' },
+        { title: '公司', key: 'companyName' },
         { title: '微信昵称', key: 'nickName' },
-        { title: '自己邀请码', key: 'popuCode' },
+        { title: '邀请码', key: 'popuCode' },
         { title: '邀请者', key: 'parentPopuCode' },
-        { title: '头像', key: 'avatarUrl', render: (h, params) => {
+        {          title: '头像', key: 'avatarUrl', render: (h, params) => {
             return h('img', {
               attrs: {
                 src: params.row.avatarUrl ? params.row.avatarUrl : ''
@@ -70,22 +104,24 @@ export default {
           // options: ['delete'],
           button: [
             (h, params, vm) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.userEdit(params.row)
+              if (params.row.state==3) {
+                return h('div', [
+                  h('Button', {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.userEdit(params.row)
+                      }
                     }
-                  }
-                }, '审核'),
-              ])
+                  }, '审核'),
+                ])
+              }
             }
           ]
         }
@@ -94,7 +130,7 @@ export default {
     }
   },
   watch: {
-    modal1 (val) {
+    modal1(val) {
       console.log(val)
     }
   },
@@ -103,34 +139,70 @@ export default {
       this.imgName = url;
       this.visible = true;
     },
-    initParams () {
+    addUserInfo(type) {
+      if (type == 'no') {
+        console.log('不通过')
+        this.buyerInfoAudit(5)
+      } else {
+        if (this.params.realName=='') {
+          this.$Message.error('请填写姓名')
+          return
+        }
+        if (this.params.tele=='') {
+          this.$Message.error('请填写电话')
+          return
+        }
+        if (this.params.companyName=='') {
+          this.$Message.error('请填写公司名称')
+          return
+        }
+        this.params.id = this.row.id
+        modifyBuyerInfo(this.params).then(res => {
+          if (res.data && res.data.success) {
+            this.$Message.success('操作成功')
+            this.buyerInfoAudit(4)
+          } else {
+            this.$Modal.error({
+              title: '提示',
+              content: res.data.message,
+            })
+          }
+          this.modal1 = false
+        }, error => {
+          this.$Message.error('操作失败')
+          this.modal1 = false
+        })
+      }
+      
+    },
+    initParams() {
       this.row = {}
     },
-    showAddUser () {
+    showAddUser() {
       this.modal1 = true
     },
-    handleDelete (params) {
+    handleDelete(params) {
     },
-    changepage (page) {
+    changepage(page) {
       this.listparams.pageNum = page
       this.getList()
     },
-    getList () {
+    getList() {
       buyerInfoList(this.listparams).then(res => {
         this.tableData = res.data.result
         this.tableData.list.map(x => {
-          if (x.state==2) {
-            x.stateName='业务员待审核'
-          } else if(x.state==3){
-            x.stateName='设计师待审核'
-          } else if(x.state==5){
-            x.stateName='审核未通过'
+          if (x.state == 2) {
+            x.stateName = '业务员待审核'
+          } else if (x.state == 3) {
+            x.stateName = '设计师待审核'
+          } else if (x.state == 5) {
+            x.stateName = '审核未通过'
           } else {
-            x.stateName='正常'
+            x.stateName = '正常'
           }
-          if (x.userType==2) {
+          if (x.userType == 2) {
             x.userTypeName = '业务员'
-          }else if(x.userType==3){
+          } else if (x.userType == 3) {
             x.userTypeName = '设计师'
           } else {
             x.userTypeName = '普通用户'
@@ -138,17 +210,17 @@ export default {
         })
       })
     },
-    ok () {
+    ok() {
       this.buyerInfoAudit(4)
     },
-    cancel () {
-      this.buyerInfoAudit(5)
+    cancel() {
+      // this.buyerInfoAudit(5)
     },
     buyerInfoAudit(auditState) {
       var vm = this
       let params = {
-        auditState:auditState,
-        id:this.row.id
+        auditState: auditState,
+        id: this.row.id
       }
       buyerInfoAudit(params).then(res => {
         if (res.data && res.data.success) {
@@ -163,18 +235,24 @@ export default {
           })
         }
         this.modal1 = false
-      },error=>{
+      }, error => {
         this.$Message.error('操作失败')
         this.modal1 = false
       })
     },
-    userEdit (item) { // 审核
+    userEdit(item) { // 审核
       this.row = item
       this.row.images = item.fileUrl.split(';')
+      this.params= {
+        companyName: "",
+        id: 0,
+        realName: "",
+        tele: ""
+      }
       this.showAddUser()
     }
   },
-  mounted () {
+  mounted() {
     this.getList()
   }
 }

@@ -4,7 +4,7 @@
       <tables ref="tables" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0"/>
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
-    <Modal v-model="modal1" title="审核" @on-ok="ok" @on-cancel="cancel" :loading="loading" okText="审核通过" cancelText="审核不通过">
+    <Modal v-model="modal1" title="审核" @on-ok="ok" @on-cancel="cancel" :loading="loading" >
       <div v-if="row.images">
         <div class="">上传的图片：<br/></div>
           <div class="demo-upload-list" v-for="(url,index) in row.images" :key="index">
@@ -13,6 +13,13 @@
                 <Icon type="ios-eye-outline" size='30' @click.native="handleView($showUrl+url)"></Icon>
             </div>
           </div>
+      </div>
+       <div style="text-align:right">
+        <i-button type="error" style="margin-right:10px" @click="buyerInfoAudit(5)">审核不通过</i-button>
+        <i-button type="primary" @click="buyerInfoAudit(4)">审核通过</i-button>
+      </div>
+      <div slot="footer">
+
       </div>
     </Modal>
     <Modal title="查看大图" v-model="visible">
@@ -34,7 +41,7 @@ export default {
       listparams: {
         pageNum: 1,
         pageSize: 30,
-        state:this.$route.name=='design'?3:2
+        userType:2,
       },
       row: {},
       modal1: false,
@@ -70,22 +77,24 @@ export default {
           // options: ['delete'],
           button: [
             (h, params, vm) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.userEdit(params.row)
+              if (params.row.state==2) {
+                return h('div', [
+                  h('Button', {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.userEdit(params.row)
+                      }
                     }
-                  }
-                }, '审核'),
-              ])
+                  }, '审核'),
+                ])
+              }
             }
           ]
         }
@@ -139,10 +148,10 @@ export default {
       })
     },
     ok () {
-      this.buyerInfoAudit(4)
+      // this.buyerInfoAudit(4)
     },
     cancel () {
-      this.buyerInfoAudit(5)
+      // this.buyerInfoAudit(5)
     },
     buyerInfoAudit(auditState) {
       var vm = this

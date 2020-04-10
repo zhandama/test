@@ -26,7 +26,7 @@ export default {
       loading: true,
       modify: false,
       columns: [
-        { title: '微信昵称', key: 'nickName' },
+        { title: '微信昵称', key: 'nickName'},
         { title: '自己邀请码', key: 'popuCode' },
         { title: '邀请者', key: 'parentPopuCode' },
         { title: '头像', key: 'avatarUrl', render: (h, params) => {
@@ -49,6 +49,7 @@ export default {
         { title: '角色', key: 'userTypeName' },
         { title: '状态', key: 'stateName' },
         { title: '时间', key: 'createTime' },
+        
       ],
       tableData: []
     }

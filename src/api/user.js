@@ -84,3 +84,12 @@ export const buyerInfoAudit = data => {
     method: 'post'
   })
 }
+// 完善信息
+export const modifyBuyerInfo = data => {
+  return axios.request({
+    url: 'buyerInfo/modifyBuyerInfo',
+    data,
+    method: 'post'
+  })
+}
+
