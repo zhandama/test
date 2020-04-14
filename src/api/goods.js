@@ -147,3 +147,13 @@ export const manualPayOrder = (params) => {
     method: 'post'
   })
 }
+
+// 修改价格
+export const modifyOrderPrice = data=> {
+  return axios.request({
+    url: 'orderInfo/modifyOrderPrice',
+    data,
+    method: 'post'
+  })
+}
+

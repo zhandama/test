@@ -65,6 +65,15 @@
         <span slot="prepend">订单号<span class="xing">*</span>：</span>
       </i-input>
     </Modal>
+    
+    <Modal v-model="modal4" title="手动补单" @on-ok="editPrice" :loading="loading" width="400" :styles="{'margin-bottom': '30px'}">
+      <i-input v-model="price.orderId" placeholder="请输入..." style="width: 330px;" :readonly='true'>
+        <span slot="prepend">订单号<span class="xing">*</span>：</span>
+      </i-input>
+      <i-input v-model="price.totalPrice" placeholder="请输入..." style="width: 330px;margin-top:20px">
+        <span slot="prepend">价格<span class="xing">*</span>：</span>
+      </i-input>
+    </Modal>
 
     <Button style="margin: 10px 0;" type="primary" @click="exportExcel">导出为Csv文件</Button>
   </div>
@@ -72,7 +81,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { orderList, deliveryOrder, manualPayOrder } from '@/api/goods'
+import { orderList, deliveryOrder, manualPayOrder, modifyOrderPrice } from '@/api/goods'
 export default {
   name: 'tables_page',
   components: {
@@ -88,19 +97,22 @@ export default {
         orderId: '',
         goodsId: ''
       },
+      price:{
+        orderId:'',
+        totalPrice: ''
+      },
       goodsInfo: '',
       StartTime: new Date(new Date() - 604800000),
       EndTime: new Date(),
       optionsStartTime: {
-        // disabledDate (date) {
-        //     return date && date.valueOf() < Date.now() - 86400000;
-        // }
+        disabledDate (date) {
+            return date && date.valueOf() > Date.now();
+        }
       },
       optionsEndTime: {
-        // disabledDate (date) {
-        //     const disabledDay = date.getDate();
-        //     return disabledDay === 15;
-        // }
+        disabledDate (date) {
+            return date && date.valueOf() > Date.now();
+        }
       },
       sendParams: {
         orderId: '',
@@ -109,6 +121,7 @@ export default {
       modal1: false,
       modal2: false,
       modal3: false,
+      modal4: false,
       loading: true,
       modify: false,
       addOrderId:'',
@@ -122,6 +135,7 @@ export default {
         {
           title: '操作',
           key: 'handle',
+          width: 200,
           // options: ['delete'],
           button: [
             (h, params, vm) => {
@@ -140,6 +154,22 @@ export default {
                   }
                 }
               }, '查看'))
+              if (params.row.state == 1) {
+                arr.push(h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.showPrice(params.row)
+                    }
+                  }
+                }, '修改价格'))
+              }
               if (params.row.state == 2) {
                 arr.push(h('Button', {
                   props: {
@@ -171,9 +201,12 @@ export default {
   },
   methods: {
     initTime() {
-      this.listparams.createStartTime = this.StartTime
-      this.listparams.createEndTime = this.EndTime
-
+      this.listparams.createStartTime = this.dataTime(this.StartTime)
+      this.listparams.createEndTime = this.dataTime(this.EndTime)
+    },
+    dataTime(date){
+      var time = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+      return time
     },
     initParams() {
       this.sendParams = {
@@ -181,6 +214,43 @@ export default {
         sendCode: '',
       }
       this.modify = false
+    },
+    showPrice(row){
+      this.modal4 = true
+      this.price.totalPrice = ''
+      this.price.orderId = row.orderId
+    },
+    editPrice(){
+      this.modal4 = false
+      if (this.price.totalPrice == ''||this.price.totalPrice <= 0) {
+        this.$Modal.error({
+          title: '提示',
+          content: '请输入价格',
+          onOk: () => {
+            this.modal4 = true
+          }
+        })
+        return
+      }
+      modifyOrderPrice(this.price).then(res => {
+        if (res.data && res.data.success) {
+          this.price.totalPrice = ''
+          this.$Message.success('操作成功')
+          this.listparams.pageNum = 1
+          this.getList()
+        } else {
+          this.$Modal.error({
+            title: '提示',
+            content: res.data.message,
+            onOk: () => {
+              this.modal4 = true
+            }
+          })
+        }
+        this.modal4 = false
+      },error=>{
+        this.$Message.error('操作失败')
+      })
     },
     search() {
       if (this.listparams.createStartTime == '' || this.listparams.createEndTime == '') {
@@ -198,8 +268,6 @@ export default {
       this.listparams.createStartTime = val
       this.optionsEndTime = {
         disabledDate(date) {
-          console.log(date.valueOf(), vm.StartTime)
-
           if ((date.valueOf() < vm.StartTime) || (date.valueOf() > (vm.StartTime.valueOf() + 2591160000))) {
             return date
           }
@@ -209,11 +277,11 @@ export default {
     endtTimeChange(val) {
       let vm = this
       this.listparams.createEndTime = val
-      this.optionsStartTime = {
-        disabledDate(date) {
-          return date && date.valueOf() < vm.EndTime + 2592000000;
-        }
-      }
+      // this.optionsStartTime = {
+      //   disabledDate(date) {
+      //     return date && date.valueOf() < vm.EndTime + 2592000000;
+      //   }
+      // }
     },
     showSend(row) {
       if (row) {

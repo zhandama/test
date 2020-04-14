@@ -92,4 +92,11 @@ export const modifyBuyerInfo = data => {
     method: 'post'
   })
 }
-
+// 添加积分
+export const addScore = data => {
+  return axios.request({
+    url: 'scoreInfo/addScore',
+    data,
+    method: 'post'
+  })
+}

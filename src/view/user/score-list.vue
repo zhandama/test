@@ -1,7 +1,14 @@
 <template>
   <div>
     <Card shadow title="积分列表">
-      <tables ref="tables" editable searchable search-place="top" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0"/>
+      
+      <div style="margin:10px 0">
+        <i-input v-model="listparams.orderId" placeholder="查询单个订单号" style="width:200px;float:left;margin-right:5px">
+          <span slot="prepend">订单号</span>
+        </i-input>
+        <i-button type="primary" @click="search()">搜索</i-button>
+      </div>
+      <tables ref="tables" v-model="tableData.list" :columns="columns" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0"/>
       <Page :total="tableData.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
   </div>
@@ -19,7 +26,8 @@ export default {
     return {
       listparams: {
         pageNum: 1,
-        pageSize: 30
+        pageSize: 30,
+        orderId:''
       },
       params: {
         loginAccount: '',
@@ -102,6 +110,10 @@ export default {
   methods: {
     handleDelete (params) {
     },
+    search(){
+      this.listparams.pageNum = 1
+      this.getList()
+    },
     changepage (page) {
       this.listparams.pageNum = page
       this.getList()
@@ -118,9 +130,9 @@ export default {
             x.scoreStateName = '已失效'
           }
           if (x.scoreType==1) {
-            x.scoreTypeName = '自己'
+            x.scoreTypeName = '自己购买'
           } else if (x.scoreType==2) {
-            x.scoreTypeName = '邀请者'
+            x.scoreTypeName = '邀请者购买'
           }
           if (x.isAdd) {
             x.isAddName = '+'
