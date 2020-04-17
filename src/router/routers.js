@@ -204,18 +204,36 @@ export default [
         name: 'design',
         meta: {
           icon: 'md-list',
-          title: '设计师'
+          title: '设计师列表'
         },
         component: () => import('@/view/user/design-list.vue')
+      },
+      {
+        path: 'designauditing',
+        name: 'designauditing',
+        meta: {
+          icon: 'md-list',
+          title: '设计师审核'
+        },
+        component: () => import('@/view/user/design-auditing.vue')
       },
       {
         path: 'yewuyuan',
         name: 'yewuyuan',
         meta: {
           icon: 'md-list',
-          title: '业务员审核'
+          title: '业务员列表'
         },
         component: () => import('@/view/user/yewuyuan-list.vue')
+      },
+      {
+        path: 'yewuyuanauditing',
+        name: 'yewuyuanauditing',
+        meta: {
+          icon: 'md-list',
+          title: '业务员审核'
+        },
+        component: () => import('@/view/user/yewuyuan-auditing.vue')
       },
     ]
   },
