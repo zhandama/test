@@ -2,7 +2,7 @@
   <div>
     <Card shadow title="家具分类">
       <i-button type="primary" @click="showAdd" style="margin-bottom:10px">添加分类</i-button>
-      <tables ref="tables" v-model="list.list" :columns="columns" @on-delete="handleDelete" v-if="list.list&&list.list.length>0"/>
+      <tables ref="tables" v-model="list.list" :columns="columns" :draggable="true" @on-drag-drop="onDragDrop" @on-delete="handleDelete" v-if="list.list&&list.list.length>0"/>
       <Page :total="list.total" :page-size="listparams.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
     <Modal v-model="modal1" title="添加/修改" @on-ok="ok" @on-cancel="cancel" :loading="loading">
@@ -12,6 +12,11 @@
         </i-input>
         <span style="line-height:30px;float:left;padding-left:7px;color:#aaa">(尽量四个字以内)</span>
         <div style="clear:both"></div>
+      </div>
+      <div class="textinput">
+        <i-input v-model="params.sort" placeholder="输入排序..." style="width: 300px">
+          <span slot="prepend">排序：</span>
+        </i-input>
       </div>
       <div class="textinput">
         <i-input v-model="params.remark" placeholder="分类备注..." style="width: 300px">
@@ -44,6 +49,7 @@ export default {
       },
       params: {
         name: '',
+        sort:0,
         parentId: -1,
         remark:'',
         imageUrl:'',
@@ -54,9 +60,10 @@ export default {
       loading: true,
       modify: false,
       columns: [
-        { title: 'Id', key: 'id', sortable: true },
+        { title: 'Id', key: 'id'},
         { title: '分类名称', key: 'name' },
         { title: '备注', key: 'remark' },
+        { title: '排序', key: 'sort',sortable: true,},
         { title: '状态', key: 'enableName' },
         { title: '时间', key: 'createTime' },
         {
@@ -133,14 +140,25 @@ export default {
         name: '',
         parentId: -1,
         remark:'',
-        imageUrl:''
+        imageUrl:'',
+        sort:0
       }
       this.imageUrl = []
       this.modify = false
     },
+    onDragDrop(a,b){
+        console.log(a,b);
+        // this.sort()
+        // this.list.splice(b,1,...this.list.splice(a, 1 , this.list[b]));
+    },
     showAdd () {
       this.modal1 = true
     },
+    // sort(){
+    //   modifyCategory(this.params).then(res => {
+    //     console.log(res)
+    //   })
+    // },
     handleDelete (params) {
       deleteCategory(params.row.id).then(res => {
         if (res.data && res.data.success) {

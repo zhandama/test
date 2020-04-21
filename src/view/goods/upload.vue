@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="demo-upload-list" v-for="item in uploadList">
+  <div class="demo-upload-list" v-for="item in uploadList" :draggable="true" @dragstart="drag($event,item)" @dragover.prevent @drop="drop($event,item)">
     <template v-if="item.status === 'finished'">
       <img :src="$showUrl+item.url">
       <div class="demo-upload-list-cover">
@@ -53,16 +53,29 @@ export default {
     return {
       imgName: '',
       visible: false,
-      uploadList: []
+      uploadList: [],
+      data1:'',
+      data2:''
     }
   },
   methods: {
+    drag(event,item) {
+      this.data1 = item
+    },
+    drop(event,item){
+      this.data2 = item
+      if (this.data1.url!=this.data2.url) {
+        const fileList = this.$refs.upload.fileList;
+        this.$refs.upload.fileList.splice(fileList.indexOf(this.data2), 1,...fileList.splice(fileList.indexOf(this.data1), 1 , this.data2));
+      }
+    },
     handleView(url) {
       this.imgName = url;
       this.visible = true;
     },
     handleRemove(file) {
       const fileList = this.$refs.upload.fileList;
+      console.log(file)
       this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
     },
     handleSuccess(res, file) {

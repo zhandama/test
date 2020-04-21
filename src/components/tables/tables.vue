@@ -23,6 +23,7 @@
       :size="size"
       :no-data-text="noDataText"
       :no-filtered-data-text="noFilteredDataText"
+      :draggable="draggable"
       @on-current-change="onCurrentChange"
       @on-select="onSelect"
       @on-select-cancel="onSelectCancel"
@@ -33,6 +34,7 @@
       @on-row-click="onRowClick"
       @on-row-dblclick="onRowDblclick"
       @on-expand="onExpand"
+      @on-drag-drop="onDragDrop"
     >
       <slot name="header" slot="header"></slot>
       <slot name="footer" slot="footer"></slot>
@@ -86,6 +88,10 @@ export default {
     showHeader: {
       type: Boolean,
       default: true
+    },
+    draggable:{
+      type: Boolean,
+      default: false
     },
     highlightRow: {
       type: Boolean,
@@ -257,7 +263,10 @@ export default {
     },
     onExpand (row, status) {
       this.$emit('on-expand', row, status)
-    }
+    },
+    onDragDrop (a, b) {
+      this.$emit('on-drag-drop', a, b)
+    },
   },
   watch: {
     columns (columns) {
