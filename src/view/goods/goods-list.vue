@@ -5,6 +5,20 @@
       <tables ref="tables" editable searchable search-place="top" v-model="tableData.list" :columns="columns" @on-row-dblclick="handleRowClick" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="params.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
+    <Modal v-model="modal2" title="编辑价格" width="700" @on-cancel="addcancel">
+      <div>
+        <div style="border-bottom:1px solid #eee;line-height:30px;padding:5px 10px">
+          <div style="width:150px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;float:left;">aaaaaaaaaaaaaaaaaaaaaaaaaaaa</div><i-input v-model="addparams.title" placeholder="请输入价格" style="width: 80px;float:left;"></i-input>
+          <div style="clear:both"></div>
+        </div>
+      </div>
+      <div style="text-align:right;margin-top:10px">
+        <i-button type="primary" >确定</i-button>
+      </div>
+      <div slot="footer">
+
+      </div>
+    </Modal>
     <Modal v-model="modal1" title="添加/修改" @on-ok="ok" @on-cancel="addcancel" :loading="loading" width="700" :styles="{'margin-bottom': '30px'}">
       <div class="textinput">
         <i-input v-model="addparams.title" placeholder="请输入..." style="width: 430px;float:left;">
@@ -13,7 +27,7 @@
         <Checkbox v-model="addparams.hot" style="float:left;padding-top:7px;padding-left:10px">热销</Checkbox>
         <div style="clear:both"></div>
       </div>
-      <div class="textinput">
+      <!-- <div class="textinput">
         <i-input v-model="addparams.initPrice" placeholder="请输入..." style="width: 200px;float:left">
           <span slot="prepend">原价￥<span class="xing">*</span>：</span>
         </i-input>
@@ -21,7 +35,7 @@
           <span slot="prepend">会员价￥：</span>
         </i-input>
         <div style="clear:both"></div>
-      </div>
+      </div> -->
       <div class="textinput">
         <div class="ivu-input-wrapper ivu-input-wrapper-default ivu-input-type ivu-input-group ivu-input-group-default ivu-input-group-with-prepend" style="width: 350px;">
           <div class="ivu-input-group-prepend"><span>商品类别<span class="xing">*</span>：</span></div>
@@ -98,12 +112,14 @@ export default {
         description: '',
       },
       modal1: false,
+      modal2:false, 
       loading: true,
       modify: false,
       property: [],
       category: [],
       goodsAttr: [],
       goodsImg: [],
+      goodsIdPropertyList:[],
       columns: [
         { title: '商品ID', key: 'goodsId', sortable: true },
         { title: '商品标题', key: 'title' },
@@ -128,7 +144,7 @@ export default {
         {
           title: '操作',
           key: 'handle',
-          width: 200,
+          width: 250,
           // options: ['delete'],
           button: [
             (h, params, vm) => {
@@ -148,6 +164,20 @@ export default {
                     }
                   }
                 }, '修改'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.goodsEditPrice(params.row)
+                    }
+                  }
+                }, '定价'),
                 h('Button', {
                   props: {
                     type: 'warning',
@@ -199,7 +229,7 @@ export default {
     },
     showAdd() {
       this.addparams.goodsPropertyList = []
-      this.initgoodsPropertyList()
+      this.initgoodsPropertyList(this.goodsIdPropertyList)
       this.modal1 = true
       this.$refs.editor.setHtml(this.addparams.description)
     },
@@ -267,15 +297,15 @@ export default {
           }
         })
         return false
-      } else if (this.addparams.initPrice <= 0) {
-        this.$Modal.error({
-          title: '提示',
-          content: '请输入价格',
-          onOk: () => {
-            this.showAdd()
-          }
-        })
-        return false
+      // } else if (this.addparams.initPrice <= 0) {
+      //   this.$Modal.error({
+      //     title: '提示',
+      //     content: '请输入价格',
+      //     onOk: () => {
+      //       this.showAdd()
+      //     }
+      //   })
+      //   return false
       } else if (this.category.value.length==0) {
         this.$Modal.error({
           title: '提示',
@@ -347,6 +377,15 @@ export default {
             })
           }
           this.modal1 = false
+        },error=>{ 
+          this.$Modal.error({
+              title: '提示',
+              content: error.response.data.message,
+              onOk: () => {
+                this.showAdd()
+              }
+            })
+          this.modal1 = false
         })
       } else {
         goodsAdd(this.addparams).then(res => {
@@ -397,10 +436,76 @@ export default {
       this.goodsAttr = []
       this.goodsImg = []
       this.category.value = []
+      this.goodsIdPropertyList = []
       this.modify = false
+    },
+    goodsEditPrice(row){
+      this.getSelectByGoodsId(row.goodsId,true)
+      this.modal2 = true
+    },
+    PriceProperty(){
+      let list = [],list2= []
+      this.goodsIdPropertyList.map(x=>{
+        if (x) {
+          list2 = []
+          let obj = {
+            fieldName:x.fieldName,
+            name:x.name
+          }
+          let propertyList = x.propertyValue.split(';')
+          if (propertyList.length > 1) {
+            propertyList.map(n=>{
+              list2.push({propertyValue:n,...obj})
+            })
+          } else {
+            obj.propertyValue = x.propertyValue
+            list2.push(obj)
+          }
+          list.push(list2)
+        }
+      })
+      // var arr1 = ["a"];
+      // var arr2 = ["A","B"];
+      // var arr3 = ["E","F"];
+      // var arr4 = ["1","2","3"];
+      // function cp(arrs) {
+      //   return arrs.reduce((a, b) => {
+      //     console.log(a)
+      //       const arr = [];
+      //       a.forEach(i => {
+      //         console.log(i)
+      //           b.forEach(j => {
+      //             console.log(j)
+      //               arr.push(i + "_" + j);
+      //               console.log(arr)
+      //           });
+      //       });
+      //       return arr;
+      //   });
+      // }
+      // console.log(cp([arr1, arr2, arr3, arr4]))
+      function cp1(arrs) {
+        return arrs.reduce((a, b) => {
+            const ar = [];
+            a.forEach(i => {
+                b.forEach(j => {
+                  let aaa = typeof i == "object" ? JSON.stringify(i):i
+                    ar.push(aaa + "@#" + JSON.stringify(j));
+                });
+            });
+            return ar;
+        });
+      }
+      this.PriceList = cp1(list) 
+      console.log(this.PriceList)
+      this.PriceList.map(x=>{
+        console.log(x.split('@#'))
+      })
+      
     },
     goodsEdit(row) {
       this.modify = true
+      this.goodsIdPropertyList = []
       this.addparams.id = row.id
       this.addparams.title = row.title
       this.addparams.hot = row.hot
@@ -413,12 +518,15 @@ export default {
       this.getSelectByGoodsId(row.goodsId)
       this.showAdd()
     },
-    getSelectByGoodsId(goodsId) {
+    getSelectByGoodsId(goodsId,EP) {
       selectByGoodsId({ goodsId }).then(res => {
-        console.log(res.data.result.goodsPropertyList)
         if (res.data.result&&res.data.result.goodsPropertyList) {
           let list = res.data.result.goodsPropertyList
+          this.goodsIdPropertyList = list
           this.initgoodsPropertyList(list)
+          if(EP){
+            this.PriceProperty()
+          }
         }
       })
     },
