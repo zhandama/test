@@ -5,15 +5,16 @@
       <tables ref="tables" editable searchable search-place="top" v-model="tableData.list" :columns="columns" @on-row-dblclick="handleRowClick" @on-delete="handleDelete" v-if="tableData.list&&tableData.list.length>0" />
       <Page :total="tableData.total" :page-size="params.pageSize" show-total class="paging" @on-change="changepage" style="margin-top:20px"></Page>
     </Card>
-    <Modal v-model="modal2" title="编辑价格" width="700" @on-cancel="addcancel">
-      <div>
-        <div style="border-bottom:1px solid #eee;line-height:30px;padding:5px 10px">
-          <div style="width:150px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;float:left;">aaaaaaaaaaaaaaaaaaaaaaaaaaaa</div><i-input v-model="addparams.title" placeholder="请输入价格" style="width: 80px;float:left;"></i-input>
+    <Modal v-model="modal2" title="编辑价格" width="750" @on-cancel="addcancel">
+      <div v-if="PriceList&&PriceList.length>0">
+        <div style="margin-bottom:6px;" v-for="(item,index) in PriceList" :key="index">
+          <span class="priceSpan" v-for="(sonItem,sonIndex) in item.sku" :key="sonIndex">{{sonItem.name}}:{{sonItem.propertyValue}}</span>
+          <span class="priceSpan" style="margin-right:0;border-radius:5px 0 0 5px;border-right:0">价格:</span><input class="priceSpan"  v-model="item.price" placeholder="请输入价格" style="width: 90px;border-radius:0px 4px 4px 0;background:#fff">
           <div style="clear:both"></div>
         </div>
       </div>
       <div style="text-align:right;margin-top:10px">
-        <i-button type="primary" >确定</i-button>
+        <i-button type="primary" @click="toEditPrice">确定</i-button>
       </div>
       <div slot="footer">
 
@@ -81,7 +82,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { goodsAdd, goodsModify, selectByGoodsId, goodsDelete, getGoodsList, goodsOnline, propertyInfoList, categoryList } from '@/api/goods'
+import { goodsAdd, goodsModify, selectByGoodsId, goodsDelete, getGoodsList, goodsOnline, propertyInfoList, categoryList,saveSku } from '@/api/goods'
 import Editor from '_c/editor'
 import Icons from '_c/icons'
 import uploadImg from './upload.vue'
@@ -120,6 +121,9 @@ export default {
       goodsAttr: [],
       goodsImg: [],
       goodsIdPropertyList:[],
+      goodsPropertySkuList:[],
+      PriceList:[],
+      PriceGoodsId:'',
       columns: [
         { title: '商品ID', key: 'goodsId', sortable: true },
         { title: '商品标题', key: 'title' },
@@ -166,7 +170,7 @@ export default {
                 }, '修改'),
                 h('Button', {
                   props: {
-                    type: 'primary',
+                    type: 'info',
                     size: 'small'
                   },
                   style: {
@@ -180,7 +184,7 @@ export default {
                 }, '定价'),
                 h('Button', {
                   props: {
-                    type: 'warning',
+                    type: params.row.state == 1 ? 'warning' : 'success',
                     size: 'small'
                   },
                   style: {
@@ -440,8 +444,8 @@ export default {
       this.modify = false
     },
     goodsEditPrice(row){
+      this.PriceGoodsId = row.goodsId
       this.getSelectByGoodsId(row.goodsId,true)
-      this.modal2 = true
     },
     PriceProperty(){
       let list = [],list2= []
@@ -464,26 +468,6 @@ export default {
           list.push(list2)
         }
       })
-      // var arr1 = ["a"];
-      // var arr2 = ["A","B"];
-      // var arr3 = ["E","F"];
-      // var arr4 = ["1","2","3"];
-      // function cp(arrs) {
-      //   return arrs.reduce((a, b) => {
-      //     console.log(a)
-      //       const arr = [];
-      //       a.forEach(i => {
-      //         console.log(i)
-      //           b.forEach(j => {
-      //             console.log(j)
-      //               arr.push(i + "_" + j);
-      //               console.log(arr)
-      //           });
-      //       });
-      //       return arr;
-      //   });
-      // }
-      // console.log(cp([arr1, arr2, arr3, arr4]))
       function cp1(arrs) {
         return arrs.reduce((a, b) => {
             const ar = [];
@@ -496,12 +480,30 @@ export default {
             return ar;
         });
       }
-      this.PriceList = cp1(list) 
-      console.log(this.PriceList)
-      this.PriceList.map(x=>{
-        console.log(x.split('@#'))
+      function objKeySort(arys) { 
+        var newkey = Object.keys(arys).sort();　　 
+        var newObj = {};
+        for(var i = 0; i < newkey.length; i++) {
+          newObj[newkey[i]] = arys[newkey[i]]; 
+
+        }
+        return newObj;
+      }
+      this.PriceList = cp1(list)
+      this.PriceList = this.PriceList.map(x=>{
+        let price = ''
+        let pp = x.split('@#').map(n=>{
+          var _n = objKeySort(JSON.parse(n))
+          return _n
+        })
+        this.goodsPropertySkuList.map(f=>{
+          if (f.sku == JSON.stringify(pp)){
+            price = f.price
+          }
+        })
+        return {price,sku:pp}
       })
-      
+      this.modal2 = true
     },
     goodsEdit(row) {
       this.modify = true
@@ -525,9 +527,46 @@ export default {
           this.goodsIdPropertyList = list
           this.initgoodsPropertyList(list)
           if(EP){
+            this.goodsPropertySkuList = res.data.result.goodsPropertySkuList
             this.PriceProperty()
           }
         }
+      })
+    },
+    toEditPrice(){
+      let list = JSON.parse(JSON.stringify(this.PriceList))
+      list.map(x=>{
+        x.sku = JSON.stringify(x.sku )
+      })
+      let params = {
+        addGoodsPropertySkuRequestList:list,
+        goodsId:this.PriceGoodsId
+      }
+      saveSku(params).then(res => {
+        if (res.data && res.data.success) {
+          this.$Message.success('操作成功')
+          this.initParams()
+          this.params.pageNum = 1
+          this.getList()
+        } else {
+          this.$Modal.error({
+            title: '提示',
+            content: res.data.message,
+            onOk: () => {
+              this.modal2 = true
+            }
+          })
+        }
+        this.modal2 = false
+      },error=>{ 
+        this.$Modal.error({
+            title: '提示',
+            content: error.response.data.message,
+            onOk: () => {
+              this.modal2 = true
+            }
+          })
+        this.modal2 = false
       })
     },
     addcancel() {
@@ -568,5 +607,8 @@ export default {
 .inpCheck-tips {
   padding-left: 3px;
   float: right;
+}
+.priceSpan{
+  display:inline-block;padding:6px 10px;border:1px solid #eaeaea;margin:0 5px 5px 0;border-radius:5px;background:#fafafa
 }
 </style>

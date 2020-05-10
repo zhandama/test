@@ -31,6 +31,7 @@ export const goodsModify = data => {
     method: 'post'
   })
 }
+
 // 商品删除
 export const goodsDelete = data => {
   return axios.request({
@@ -157,3 +158,11 @@ export const modifyOrderPrice = data=> {
   })
 }
 
+// 商品编辑价格
+export const saveSku = data => {
+  return axios.request({
+    url: 'goodsInfo/saveSku',
+    data,
+    method: 'post'
+  })
+}
