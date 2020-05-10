@@ -45,7 +45,7 @@
           <div class="seeGoodsImg"><img :src="$showUrl+item.goodsAttr" width="80px"></div>
           <div class="seeGoodsCont">
             <div class="seeGoodsTitle">商品名字：{{item.title}}</div>
-            <div class="seeGoodsTitle" v-if="item.propertyTitle">{{item.propertyTitle}}</div>
+            <div class="seeGoodsTitle" v-if="item.propertyTitle" v-html="htmlPer(item.propertyTitle)">{{item.propertyTitle}}</div>
             <div class="seeGoodsTitle"><span class="seeprice">￥{{item.goodsPrice}}</span> x {{item.count}}</div>
             <div class="clear"></div>
           </div>
@@ -398,6 +398,10 @@ export default {
         this.modal3 = false
       })
     },
+    htmlPer(val){
+      val = val.replace(/;/g,'<br>')
+      return val
+    },
     exportExcel() {
       this.$refs.tables.exportCsv({
         filename: `table-${(new Date()).valueOf()}.csv`
@@ -426,6 +430,9 @@ export default {
   font-size: 14px;
   padding: 3px 0;
   border-bottom: 1px dashed #eee;
+}
+.seeGoodsCont{
+  margin-left:100px
 }
 .seeGoodsList {
   padding-left: 20px;

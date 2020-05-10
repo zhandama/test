@@ -457,7 +457,7 @@ export default {
             name:x.name
           }
           let propertyList = x.propertyValue.split(';')
-          if (propertyList.length > 1) {
+          if (propertyList.length > 1 && x.userSelect) {
             propertyList.map(n=>{
               list2.push({propertyValue:n,...obj})
             })
